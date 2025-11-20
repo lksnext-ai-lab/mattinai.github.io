@@ -23,6 +23,33 @@ body {
 
 .btn-mattinAI:hover {
     background-color: #e05a2a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(242, 107, 58, 0.3);
+}
+
+.btn-secondary {
+    background-color: white;
+    color: #222222;
+    border: 2px solid #222222;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: #222222;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(34, 34, 34, 0.2);
+}
+
+.feature-card {
+    transition: all 0.3s ease;
+    border: 1px solid #e5e7eb;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    border-color: #F26B3A;
 }
 
 @keyframes pulse {
