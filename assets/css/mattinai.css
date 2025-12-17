@@ -75,4 +75,124 @@ img[src$="logo.svg"] {
 
 img[src$="logo.svg"]:hover {
     transform: scale(1.05);
+}
+
+/* Smooth scroll behavior */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Navigation styles */
+.nav-link {
+    position: relative;
+    font-weight: 500;
+    padding-bottom: 2px;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #F26B3A;
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* External link icons */
+.external-link {
+    transition: all 0.3s ease;
+}
+
+.external-link:hover {
+    transform: translateY(-2px);
+}
+
+/* Language switcher */
+.language-switcher {
+    user-select: none;
+}
+
+.lang-btn {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.lang-btn:hover {
+    background-color: #f3f4f6;
+}
+
+.lang-btn.active-lang {
+    font-weight: bold;
+}
+
+/* Architecture card styles */
+.architecture-card {
+    transition: all 0.3s ease;
+    border: 1px solid #e5e7eb;
+}
+
+.architecture-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+    border-color: #F26B3A;
+}
+
+/* Mobile menu */
+#mobile-menu {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .nav-link {
+        font-size: 0.95rem;
+    }
+    
+    .language-switcher {
+        border-left: none;
+        padding-left: 0;
+    }
+    
+    .architecture-card {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Section padding for smooth scroll anchor offset */
+section {
+    scroll-margin-top: 80px;
+}
+
+/* Architecture diagram responsive */
+#architecture img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Technical requirements grid responsive */
+@media (max-width: 640px) {
+    .grid.md\\:grid-cols-3 {
+        grid-template-columns: 1fr;
+    }
 } 

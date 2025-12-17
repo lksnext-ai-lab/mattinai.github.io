@@ -1,0 +1,85 @@
+{
+  "nav": {
+    "about": "Honi buruz",
+    "features": "Ezaugarriak",
+    "architecture": "Arkitektura"
+  },
+  "about": {
+    "title": "MattinAI aurkezten",
+    "description": "IA aplikazio adimentsuak indartzen dituen IA tresna-kutxa osoa, LLM integrazioa, bilaketa semantikoa eta IA agente automatizatuak dituena."
+  },
+  "features": {
+    "title": "MattinAI",
+    "subtitle": "IA aplikazio adimentsuak indartzen dituen IA tresna-kutxa osoa, LLM integrazioa, bilaketa semantikoa eta IA agente automatizatuak dituena.",
+    "llm": {
+      "title": "LLM Integrazioa eta Kudeaketa",
+      "description": "Integratu OpenAI GPT, Anthropic Claude, Azure OpenAI, Mistral AI, Ollama eta gehiagorekin. Interfaze bateratua LLM hornitzaile nagusi guztientzat."
+    },
+    "rag": {
+      "title": "RAG eta Bilaketa Semantikoa",
+      "description": "RAG (Retrieval-Augmented Generation) sistema indartsuak bilaketa semantiko gaitasunekin eta bektore-datu baseen kudeaketa PostgreSQL + pgvector/Qdrant erabiliz."
+    },
+    "agents": {
+      "title": "IA Agenteak eta Automatizazioa",
+      "description": "Eraiki IA agente adimentsuak gure automatizazio-esparru osoaz. Sortu agente anitzeko arkitektura sofistikatuak eta ataza-automatizazioa."
+    },
+    "modular": {
+      "title": "Arkitektura Modularra",
+      "description": "Diseinu zabalgarri eta modularra FastAPI/Python backend-arekin eta React/TypeScript frontend-arekin. Erraza zure beharretara egokitzeko eta zabaltzeko."
+    },
+    "technical": {
+      "title": "Baldintza Teknikoak"
+    },
+    "cta": {
+      "repository": "Ikusi Biltegia",
+      "documentation": "Dokumentazioa"
+    }
+  },
+  "architecture": {
+    "title": "Agentearen Arkitektura",
+    "subtitle": "MattinAI agenteen arkitektura teknikoa, malgutasuna, eskalabilitatea eta behakortasuna kontuan hartuta diseinatua.",
+    "configuration": {
+      "title": "Konfigurazioa",
+      "description": "Agentearen portaera eta gaitasunak definitzen ditu osagai moduluen bidez.",
+      "instructions": "Sistemaren Argibideak",
+      "instructions_desc": "Prompt-ak eta nortasun ezarpenak",
+      "memory": "Memoria Konfigurazioa",
+      "memory_desc": "Estrategia, testuinguru-leihoa eta iraunkortasuna",
+      "tools": "Tresnen Erregistroa",
+      "tools_desc": "MCP konektoreak eta agentearen gaitasunak",
+      "data": "Datu Eskemak",
+      "data_desc": "JSON/Pydantic datu-trukaketetarako",
+      "rag": "RAG Konfigurazioa",
+      "rag_desc": "Datu-iturriak eta berreskuratze-estrategia"
+    },
+    "runtime": {
+      "title": "Exekuzioa eta Orkestraketa",
+      "description": "ReAct patroiarekin indartutako nukleo exekuzio-motorea erabaki adimentsurako.",
+      "gateway": "API Gateway eta Segurtasuna",
+      "gateway_desc": "Autentifikazioa eta tasa-mugaketa",
+      "memory": "Memoria eta Egoera Kudeaketa",
+      "memory_desc": "Epe laburreko eta saio-historia",
+      "orchestration": "Orkestraketa Motorea",
+      "orchestration_desc": "ReAct begizta arrazonamendurako eta ekintarako",
+      "tools": "Tresnen Exekuzioa",
+      "tools_desc": "Kanpoko API eta azpi-agente deiak",
+      "llm": "LLM Integrazioa",
+      "llm_desc": "Hornitzaile anitzeko euskarria (OpenAI, Anthropic, etab.)"
+    },
+    "observability": {
+      "title": "Behakortasuna",
+      "description": "Jarraipen eta monitorizazio osoa arazketa eta optimizaziorako.",
+      "tracing": "Exekuzioaren Jarraipena",
+      "tracing_desc": "Agentearen lan-fluxuaren pausoz pausoko jarraipena",
+      "logs": "Egunerokoen Erregistroa",
+      "logs_desc": "Sistemaren erroreen eta gertaeren erregistroa",
+      "metrics": "Errendimendu Metrikak",
+      "metrics_desc": "Latentzia, token erabilera eta kostu jarraipena",
+      "feedback": "Erabiltzailearen Feedback-a",
+      "feedback_desc": "Erantzunen kalitate-balorazioak eta ikuspegiak"
+    }
+  },
+  "footer": {
+    "sponsored": "Babeslea"
+  }
+}
