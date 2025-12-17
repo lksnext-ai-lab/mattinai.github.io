@@ -6,22 +6,22 @@
   },
   "about": {
     "title": "MattinAI aurkezten",
-    "description": "IA aplikazio adimentsuak indartzen dituen IA tresna-kutxa osoa, LLM integrazioa, bilaketa semantikoa eta IA agente automatizatuak dituena."
+    "description": "AAaplikazio adimentsuak indartzen dituen AAplataforma, LLM integrazioa, bilaketa semantikoa eta AAagente automatizatuak dituena."
   },
   "features": {
     "title": "MattinAI",
-    "subtitle": "IA aplikazio adimentsuak indartzen dituen IA tresna-kutxa osoa, LLM integrazioa, bilaketa semantikoa eta IA agente automatizatuak dituena.",
+    "subtitle": "AAaplikazio adimentsuak indartzen dituen AAplataforma, LLM integrazioa, bilaketa semantikoa eta AAagente automatizatuak dituena.",
     "llm": {
       "title": "LLM Integrazioa eta Kudeaketa",
       "description": "Integratu OpenAI GPT, Anthropic Claude, Azure OpenAI, Mistral AI, Ollama eta gehiagorekin. Interfaze bateratua LLM hornitzaile nagusi guztientzat."
     },
     "rag": {
       "title": "RAG eta Bilaketa Semantikoa",
-      "description": "RAG (Retrieval-Augmented Generation) sistema indartsuak bilaketa semantiko gaitasunekin eta bektore-datu baseen kudeaketa PostgreSQL + pgvector/Qdrant erabiliz."
+      "description": "RAG (Retrieval-Augmented Generation) sistemak bilaketa semantiko gaitasunekin eta bektore-datu baseen kudeaketa PostgreSQL + pgvector/Qdrant erabiliz."
     },
     "agents": {
-      "title": "IA Agenteak eta Automatizazioa",
-      "description": "Eraiki IA agente adimentsuak gure automatizazio-esparru osoaz. Sortu agente anitzeko arkitektura sofistikatuak eta ataza-automatizazioa."
+      "title": "AA Agenteak eta Automatizazioa",
+      "description": "Eraiki AA agenteak gure automatizazio-esparru osoaz baliatuz. Sortu agente anitzeko arkitekturak atazen automatizazioa lortzeko."
     },
     "modular": {
       "title": "Arkitektura Modularra",
@@ -43,7 +43,7 @@
       "description": "Agentearen portaera eta gaitasunak definitzen ditu osagai moduluen bidez.",
       "instructions": "Sistemaren Argibideak",
       "instructions_desc": "Prompt-ak eta nortasun ezarpenak",
-      "memory": "Memoria Konfigurazioa",
+      "memory": "MemorAAKonfigurazioa",
       "memory_desc": "Estrategia, testuinguru-leihoa eta iraunkortasuna",
       "tools": "Tresnen Erregistroa",
       "tools_desc": "MCP konektoreak eta agentearen gaitasunak",
@@ -54,17 +54,17 @@
     },
     "runtime": {
       "title": "Exekuzioa eta Orkestraketa",
-      "description": "ReAct patroiarekin indartutako nukleo exekuzio-motorea erabaki adimentsurako.",
+      "description": "ReAct patroiarekin indartutako nukleo exekuzio-motorea.",
       "gateway": "API Gateway eta Segurtasuna",
       "gateway_desc": "Autentifikazioa eta tasa-mugaketa",
-      "memory": "Memoria eta Egoera Kudeaketa",
-      "memory_desc": "Epe laburreko eta saio-historia",
+      "memory": "MemorAAeta Egoera Kudeaketa",
+      "memory_desc": "Epe laburreko eta sesio-historia",
       "orchestration": "Orkestraketa Motorea",
       "orchestration_desc": "ReAct begizta arrazonamendurako eta ekintarako",
       "tools": "Tresnen Exekuzioa",
       "tools_desc": "Kanpoko API eta azpi-agente deiak",
       "llm": "LLM Integrazioa",
-      "llm_desc": "Hornitzaile anitzeko euskarria (OpenAI, Anthropic, etab.)"
+      "llm_desc": "Hainbat hornitzaile konfiguratzeko aukera (Mistral, OpenAI, Anthropic, etab.)"
     },
     "observability": {
       "title": "Behakortasuna",
@@ -80,6 +80,6 @@
     }
   },
   "footer": {
-    "sponsored": "Babeslea"
+    "sponsored": "Babesleak"
   }
 }

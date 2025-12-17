@@ -6,11 +6,11 @@
   },
   "about": {
     "title": "Presentamos MattinAI",
-    "description": "Una caja de herramientas de IA integral que impulsa aplicaciones inteligentes con integración avanzada de LLM, búsqueda semántica y agentes de IA automatizados."
+    "description": "Una platforma de IA integral que impulsa aplicaciones inteligentes con integración avanzada de LLM, búsqueda semántica y agentes de IA automatizados."
   },
   "features": {
     "title": "MattinAI",
-    "subtitle": "Una caja de herramientas de IA integral que impulsa aplicaciones inteligentes con integración avanzada de LLM, búsqueda semántica y agentes de IA automatizados.",
+    "subtitle": "Una platforma de IA integral que impulsa aplicaciones inteligentes con integración avanzada de LLM, búsqueda semántica y agentes de IA automatizados.",
     "llm": {
       "title": "Integración y Gestión de LLM",
       "description": "Integración perfecta con OpenAI GPT, Anthropic Claude, Azure OpenAI, Mistral AI, Ollama y más. Interfaz unificada para todos los principales proveedores de LLM."
@@ -21,7 +21,7 @@
     },
     "agents": {
       "title": "Agentes de IA y Automatización",
-      "description": "Construye agentes de IA inteligentes con nuestro marco de automatización integral. Crea arquitecturas multiagente sofisticadas y automatización de tareas."
+      "description": "Construye agentes de IA inteligentes con nuestro marco de automatización integral. Crea arquitecturas multiagente sofisticadas con capacidad de automatización de tareas."
     },
     "modular": {
       "title": "Arquitectura Modular",
