@@ -6,11 +6,11 @@
   },
   "about": {
     "title": "MattinAI aurkezten",
-    "description": "AAaplikazio adimentsuak indartzen dituen AAplataforma, LLM integrazioa, bilaketa semantikoa eta AAagente automatizatuak dituena."
+    "description": "Aplikazio adimentsuak indartzen dituen plataforma, LLM integrazioa, bilaketa semantikoa eta agente automatizatuak dituena."
   },
   "features": {
     "title": "MattinAI",
-    "subtitle": "AAaplikazio adimentsuak indartzen dituen AAplataforma, LLM integrazioa, bilaketa semantikoa eta AAagente automatizatuak dituena.",
+    "subtitle": "Aplikazio adimentsuak indartzen dituen plataforma, LLM integrazioa, bilaketa semantikoa eta agente automatizatuak dituena.",
     "llm": {
       "title": "LLM Integrazioa eta Kudeaketa",
       "description": "Integratu OpenAI GPT, Anthropic Claude, Azure OpenAI, Mistral AI, Ollama eta gehiagorekin. Interfaze bateratua LLM hornitzaile nagusi guztientzat."
@@ -20,8 +20,8 @@
       "description": "RAG (Retrieval-Augmented Generation) sistemak bilaketa semantiko gaitasunekin eta bektore-datu baseen kudeaketa PostgreSQL + pgvector/Qdrant erabiliz."
     },
     "agents": {
-      "title": "AA Agenteak eta Automatizazioa",
-      "description": "Eraiki AA agenteak gure automatizazio-esparru osoaz baliatuz. Sortu agente anitzeko arkitekturak atazen automatizazioa lortzeko."
+      "title": "Agenteak eta Automatizazioa",
+      "description": "Eraiki agenteak gure automatizazio-esparru osoaz baliatuz. Sortu agente anitzeko arkitekturak atazen automatizazioa lortzeko."
     },
     "modular": {
       "title": "Arkitektura Modularra",
@@ -43,7 +43,7 @@
       "description": "Agentearen portaera eta gaitasunak definitzen ditu osagai moduluen bidez.",
       "instructions": "Sistemaren Argibideak",
       "instructions_desc": "Prompt-ak eta nortasun ezarpenak",
-      "memory": "MemorAAKonfigurazioa",
+      "memory": "Memoria Konfigurazioa",
       "memory_desc": "Estrategia, testuinguru-leihoa eta iraunkortasuna",
       "tools": "Tresnen Erregistroa",
       "tools_desc": "MCP konektoreak eta agentearen gaitasunak",
@@ -57,7 +57,7 @@
       "description": "ReAct patroiarekin indartutako nukleo exekuzio-motorea.",
       "gateway": "API Gateway eta Segurtasuna",
       "gateway_desc": "Autentifikazioa eta tasa-mugaketa",
-      "memory": "MemorAAeta Egoera Kudeaketa",
+      "memory": "Memoria eta Egoera Kudeaketa",
       "memory_desc": "Epe laburreko eta sesio-historia",
       "orchestration": "Orkestraketa Motorea",
       "orchestration_desc": "ReAct begizta arrazonamendurako eta ekintarako",

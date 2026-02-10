@@ -4,7 +4,10 @@
     "features": "Features",
     "architecture": "Architecture"
   },
-
+  "about": {
+    "title": "Introducing",
+    "description": "A comprehensive AI toolbox that powers intelligent applications with advanced LLM integration, semantic search, and automated AI agents."
+  },
   "features": {
     "title": "MattinAI",
     "subtitle": "A comprehensive AI toolbox that powers intelligent applications with advanced LLM integration, semantic search, and automated AI agents.",

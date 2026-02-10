@@ -40,42 +40,27 @@ function updateContent() {
         const translation = getNestedTranslation(translations, key);
         
         if (translation) {
-            // Check if element has children that shouldn't be replaced
-            if (element.children.length > 0 && element.querySelector('[data-i18n]')) {
-                // Has nested data-i18n elements, don't replace
-                return;
-            }
-            
-            // Check if the element contains only text or has specific structure
-            if (element.tagName === 'SPAN' || element.children.length === 0) {
+            // Check if element is a simple text container
+            if (element.children.length === 0) {
+                // No children - simple text replacement
                 element.textContent = translation;
-            } else if (element.innerHTML.includes('<span') || element.innerHTML.includes('<i')) {
-                // Preserve inner HTML structure, only update text nodes
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = element.innerHTML;
-                const walker = document.createTreeWalker(
-                    tempDiv,
-                    NodeFilter.SHOW_TEXT,
-                    null,
-                    false
-                );
-                
-                let node;
-                const textNodes = [];
-                while (node = walker.nextNode()) {
-                    if (node.textContent.trim()) {
-                        textNodes.push(node);
-                    }
+            } else {
+                // Has children - check if any have data-i18n
+                const hasI18nChildren = element.querySelector('[data-i18n]');
+                if (hasI18nChildren) {
+                    // Has nested i18n elements, skip parent
+                    return;
                 }
                 
-                // Replace text content in text nodes
-                textNodes.forEach(textNode => {
-                    textNode.textContent = translation;
+                // Element has non-i18n children (like icons)
+                // Find and update only the direct text nodes
+                const children = Array.from(element.childNodes);
+                children.forEach(child => {
+                    if (child.nodeType === Node.TEXT_NODE && 
+                        child.textContent.trim()) {
+                        child.textContent = translation;
+                    }
                 });
-                
-                element.innerHTML = tempDiv.innerHTML;
-            } else {
-                element.textContent = translation;
             }
         }
     });
@@ -88,11 +73,8 @@ function updateContent() {
         const lang = btn.dataset.lang;
         if (lang === currentLanguage) {
             btn.classList.add('active-lang');
-            btn.classList.remove('text-gray-600');
-            btn.classList.add('text-mattinOrange', 'font-bold');
         } else {
-            btn.classList.remove('active-lang', 'text-mattinOrange', 'font-bold');
-            btn.classList.add('text-gray-600');
+            btn.classList.remove('active-lang');
         }
     });
 }
@@ -102,8 +84,8 @@ function getNestedTranslation(obj, key) {
     return key.split('.').reduce((o, k) => o?.[k], obj);
 }
 
-// Change language
-async function changeLanguage(lang) {
+// Change language - MUST be global for inline onclick handlers
+window.changeLanguage = async function(lang) {
     if (isLoading) return;
     
     isLoading = true;
@@ -130,6 +112,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Get saved language or default to English
     const savedLang = localStorage.getItem('mattinai-language') || 'en';
     currentLanguage = savedLang;
+    
+    // Set initial lang attribute
+    document.documentElement.lang = currentLanguage;
     
     // Load translations and update content
     await loadTranslations(currentLanguage);
