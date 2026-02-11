@@ -113,8 +113,8 @@ export const translations = {
       resources: "Recursos",
       documentation: "Documentación",
       repository: "Repositorio GitHub",
-      offices: "OFICINAS",
-      headquarters: "SEDE SOCIAL"
+      offices: "LKS NEXT OFFICES",
+      headquarters: "SOCIAL HEADQUARTERS"
     }
   },
   en: {
@@ -231,7 +231,7 @@ export const translations = {
       resources: "Resources",
       documentation: "Documentation",
       repository: "GitHub Repository",
-      offices: "OFFICES",
+      offices: "LKS NEXT OFFICES",
       headquarters: "SOCIAL HEADQUARTERS"
     }
   },
@@ -254,7 +254,7 @@ export const translations = {
     features: {
       title: "Ezaugarri Nagusiak",
       benefitsTitle1: "MattinAI-ra sarbideko",
-      benefitsTitle2: "Beneficioak",
+      benefitsTitle2: "Onurak",
       benefitsSubtitle: "Eduki osoa ondo sortzeko",
       llm: {
         title: "LLM Integrazioa eta Kudeaketa",
@@ -349,8 +349,8 @@ export const translations = {
       resources: "Baliabideak",
       documentation: "Dokumentazioa",
       repository: "GitHub Biltegi",
-      offices: "OFICINAS",
-      headquarters: "SEDE SOCIAL"
+      offices: "LKS NEXT BULEGOAK",
+      headquarters: "EGOITZA SOZIALA"
     }
   }
 } as const;
