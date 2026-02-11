@@ -8,6 +8,7 @@ export function Architecture() {
   const architectureComponents = [
     {
       icon: Settings,
+      number: "01",
       title: t.architecture.configuration.title,
       description: t.architecture.configuration.description,
       items: [
@@ -20,6 +21,7 @@ export function Architecture() {
     },
     {
       icon: Activity,
+      number: "02",
       title: t.architecture.runtime.title,
       description: t.architecture.runtime.description,
       items: [
@@ -32,6 +34,7 @@ export function Architecture() {
     },
     {
       icon: BarChart3,
+      number: "03",
       title: t.architecture.observability.title,
       description: t.architecture.observability.description,
       items: [
@@ -44,7 +47,7 @@ export function Architecture() {
   ];
 
   return (
-    <section id="architecture" className="bg-white py-20">
+    <section id="architecture" className="bg-gray-50 py-20">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <motion.div
@@ -52,7 +55,7 @@ export function Architecture() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="text-center mb-12"
+            className="text-center mb-16"
           >
             <h2 className="text-3xl md:text-5xl font-bold mb-4">
               <span className="text-[#F26B3A]">{t.architecture.title}</span>
@@ -63,7 +66,7 @@ export function Architecture() {
           </motion.div>
 
           {/* Architecture Components Grid */}
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
             {architectureComponents.map((component, index) => (
               <motion.div
                 key={index}
@@ -71,17 +74,17 @@ export function Architecture() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-gray-50 p-6 rounded-lg"
+                className="bg-white border border-gray-200 p-6 rounded-xl hover:shadow-lg transition-all group"
               >
-                <div className="flex items-center mb-4">
-                  <div className="text-[#F26B3A] mr-3">
-                    <component.icon className="w-8 h-8" />
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="bg-[#F26B3A] text-white w-10 h-10 rounded-lg flex items-center justify-center font-bold flex-shrink-0 group-hover:scale-110 transition-transform">
+                    {component.number}
                   </div>
-                  <h3 className="text-xl font-semibold text-[#222222]">
+                  <h3 className="text-xl font-bold text-[#222222] group-hover:text-[#F26B3A] transition-colors">
                     {component.title}
                   </h3>
                 </div>
-                <p className="text-gray-600 mb-4 text-sm">
+                <p className="text-gray-600 mb-4 text-sm leading-relaxed">
                   {component.description}
                 </p>
                 <ul className="space-y-2">
@@ -89,7 +92,7 @@ export function Architecture() {
                     <li key={itemIndex} className="flex items-start text-sm">
                       <ChevronRight className="w-4 h-4 text-[#F26B3A] mr-2 mt-0.5 flex-shrink-0" />
                       <div>
-                        <span className="font-medium text-[#222222]">{item.title}:</span>{' '}
+                        <span className="font-semibold text-[#222222]">{item.title}:</span>{' '}
                         <span className="text-gray-600">{item.desc}</span>
                       </div>
                     </li>
@@ -105,28 +108,42 @@ export function Architecture() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="mt-16 bg-gradient-to-br from-[#F26B3A]/10 to-[#F26B3A]/5 p-8 rounded-lg"
+            className="bg-white border border-gray-200 p-8 md:p-12 rounded-xl"
           >
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-[#F26B3A] rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Settings className="w-8 h-8 text-white" />
+            <h3 className="text-2xl font-bold text-[#222222] mb-8 text-center">{t.architecture.flow.title}</h3>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="text-center flex-1">
+                <div className="w-20 h-20 bg-gradient-to-br from-[#F26B3A] to-[#d45a2f] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <Settings className="w-10 h-10 text-white" />
                 </div>
-                <p className="font-medium text-[#222222]">{t.architecture.flow.config}</p>
+                <p className="font-bold text-[#222222] text-lg">{t.architecture.flow.config}</p>
+                <p className="text-gray-600 text-sm mt-1">{t.architecture.flow.configDesc}</p>
               </div>
-              <div className="hidden md:block text-[#F26B3A]">→</div>
-              <div className="text-center">
-                <div className="w-16 h-16 bg-[#F26B3A] rounded-full flex items-center justify-center mx-auto mb-3">
-                  <Activity className="w-8 h-8 text-white" />
-                </div>
-                <p className="font-medium text-[#222222]">{t.architecture.flow.execution}</p>
+              
+              <div className="hidden md:flex items-center">
+                <div className="w-16 h-0.5 bg-gradient-to-r from-[#F26B3A] to-[#d45a2f]"></div>
+                <ChevronRight className="w-6 h-6 text-[#F26B3A]" />
               </div>
-              <div className="hidden md:block text-[#F26B3A]">→</div>
-              <div className="text-center">
-                <div className="w-16 h-16 bg-[#F26B3A] rounded-full flex items-center justify-center mx-auto mb-3">
-                  <BarChart3 className="w-8 h-8 text-white" />
+              
+              <div className="text-center flex-1">
+                <div className="w-20 h-20 bg-gradient-to-br from-[#F26B3A] to-[#d45a2f] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <Activity className="w-10 h-10 text-white" />
                 </div>
-                <p className="font-medium text-[#222222]">{t.architecture.flow.monitoring}</p>
+                <p className="font-bold text-[#222222] text-lg">{t.architecture.flow.execution}</p>
+                <p className="text-gray-600 text-sm mt-1">{t.architecture.flow.executionDesc}</p>
+              </div>
+              
+              <div className="hidden md:flex items-center">
+                <div className="w-16 h-0.5 bg-gradient-to-r from-[#F26B3A] to-[#d45a2f]"></div>
+                <ChevronRight className="w-6 h-6 text-[#F26B3A]" />
+              </div>
+              
+              <div className="text-center flex-1">
+                <div className="w-20 h-20 bg-gradient-to-br from-[#F26B3A] to-[#d45a2f] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                  <BarChart3 className="w-10 h-10 text-white" />
+                </div>
+                <p className="font-bold text-[#222222] text-lg">{t.architecture.flow.monitoring}</p>
+                <p className="text-gray-600 text-sm mt-1">{t.architecture.flow.monitoringDesc}</p>
               </div>
             </div>
           </motion.div>

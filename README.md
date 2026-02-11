@@ -1,7 +1,7 @@
 
-  # Integrate GitHub Repository
+  # MATTIN_AI_Nago
 
-  This is a code bundle for Integrate GitHub Repository. The original project is available at https://www.figma.com/design/O2bLlAYYIUMfFiNABlqj12/Integrate-GitHub-Repository.
+  This is a code bundle for MATTIN_AI_Nago. The original project is available at https://www.figma.com/design/O2bLlAYYIUMfFiNABlqj12/MATTIN_AI_Nago.
 
   ## Running the code
 

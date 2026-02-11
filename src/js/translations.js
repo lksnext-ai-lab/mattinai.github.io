@@ -7,19 +7,10 @@ export const translations = {
     },
     hero: {
       introducing: "Presentamos",
-      description: "Una caja de herramientas de IA integral que potencia aplicaciones inteligentes con integración avanzada de LLM, búsqueda semántica y agentes de IA automatizados.",
-      title1: "Tu plataforma de",
-      title2: "IA definitiva",
-      exploreFeatures: "Explorar características",
-      viewDocs: "Ver documentación",
-      openSource: "Open Source",
-      productionReady: "Production Ready"
+      description: "Una caja de herramientas de IA integral que potencia aplicaciones inteligentes con integración avanzada de LLM, búsqueda semántica y agentes de IA automatizados."
     },
     features: {
       title: "Características Principales",
-      benefitsTitle1: "Beneficios de unirte a",
-      benefitsTitle2: "MattinAI",
-      benefitsSubtitle: "Todo lo que necesitas para construir con éxito",
       llm: {
         title: "Integración y Gestión de LLM",
         description: "Integración perfecta con OpenAI GPT, Anthropic Claude, Azure OpenAI, Mistral AI, Ollama y más. Interfaz unificada para todos los principales proveedores de LLM."
@@ -96,11 +87,7 @@ export const translations = {
       flow: {
         config: "Configuración",
         execution: "Ejecución",
-        monitoring: "Monitoreo",
-        configDesc: "Definir comportamiento",
-        executionDesc: "Procesar y ejecutar",
-        monitoringDesc: "Rastrear y optimizar",
-        title: "Flujo de Trabajo"
+        monitoring: "Monitoreo"
       }
     },
     footer: {
@@ -108,13 +95,7 @@ export const translations = {
       partner1: "AI Innovation Partner",
       partner2: "Basque Government Agency",
       copyright: "Todos los derechos reservados.",
-      trademark: "MattinAI es una marca registrada y propiedad intelectual de LKS Next. El uso o reproducción no autorizados están prohibidos.",
-      description: "La caja de herramientas de IA integral para aplicaciones inteligentes.",
-      resources: "Recursos",
-      documentation: "Documentación",
-      repository: "Repositorio GitHub",
-      offices: "OFICINAS",
-      headquarters: "SEDE SOCIAL"
+      trademark: "MattinAI es una marca registrada y propiedad intelectual de LKS Next. El uso o reproducción no autorizados están prohibidos."
     }
   },
   en: {
@@ -125,19 +106,10 @@ export const translations = {
     },
     hero: {
       introducing: "Introducing",
-      description: "A comprehensive AI toolbox that powers intelligent applications with advanced LLM integration, semantic search, and automated AI agents.",
-      title1: "Your definitive",
-      title2: "AI platform",
-      exploreFeatures: "Explore features",
-      viewDocs: "View documentation",
-      openSource: "Open Source",
-      productionReady: "Production Ready"
+      description: "A comprehensive AI toolbox that powers intelligent applications with advanced LLM integration, semantic search, and automated AI agents."
     },
     features: {
       title: "Key Features",
-      benefitsTitle1: "Benefits of joining",
-      benefitsTitle2: "MattinAI",
-      benefitsSubtitle: "Everything you need to build successfully",
       llm: {
         title: "LLM Integration & Management",
         description: "Seamlessly integrate with OpenAI GPT, Anthropic Claude, Azure OpenAI, Mistral AI, Ollama, and more. Unified interface for all major LLM providers."
@@ -214,11 +186,7 @@ export const translations = {
       flow: {
         config: "Configuration",
         execution: "Execution",
-        monitoring: "Monitoring",
-        configDesc: "Define behavior",
-        executionDesc: "Process and execute",
-        monitoringDesc: "Track and optimize",
-        title: "Workflow Flow"
+        monitoring: "Monitoring"
       }
     },
     footer: {
@@ -226,13 +194,7 @@ export const translations = {
       partner1: "AI Innovation Partner",
       partner2: "Basque Government Agency",
       copyright: "All rights reserved.",
-      trademark: "MattinAI is a registered trademark and intellectual property of LKS Next. Unauthorized use or reproduction is prohibited.",
-      description: "The comprehensive AI toolbox for intelligent applications.",
-      resources: "Resources",
-      documentation: "Documentation",
-      repository: "GitHub Repository",
-      offices: "OFFICES",
-      headquarters: "SOCIAL HEADQUARTERS"
+      trademark: "MattinAI is a registered trademark and intellectual property of LKS Next. Unauthorized use or reproduction is prohibited."
     }
   },
   eu: {
@@ -243,19 +205,10 @@ export const translations = {
     },
     hero: {
       introducing: "Aurkezten dugu",
-      description: "AI tresna-kutxa integrala, aplikazio adimentsuak indartzen dituena LLM integrazio aurreratuarekin, bilaketa semantikoarekin eta AI agente automatizatuekin.",
-      title1: "Zure definitiboa",
-      title2: "AI plataforma",
-      exploreFeatures: "Ezaugarriak esploratu",
-      viewDocs: "Dokumentazioa ikusi",
-      openSource: "Open Source",
-      productionReady: "Produkzioan Prestatuta"
+      description: "AI tresna-kutxa integrala, aplikazio adimentsuak indartzen dituena LLM integrazio aurreratuarekin, bilaketa semantikoarekin eta AI agente automatizatuekin."
     },
     features: {
       title: "Ezaugarri Nagusiak",
-      benefitsTitle1: "MattinAI-ra sarbideko",
-      benefitsTitle2: "Beneficioak",
-      benefitsSubtitle: "Eduki osoa ondo sortzeko",
       llm: {
         title: "LLM Integrazioa eta Kudeaketa",
         description: "Integrazioa OpenAI GPT, Anthropic Claude, Azure OpenAI, Mistral AI, Ollama eta gehiagorekin. Interfaze bateratua LLM hornitzaile nagusientzat."
@@ -332,11 +285,7 @@ export const translations = {
       flow: {
         config: "Konfigurazioa",
         execution: "Exekuzioa",
-        monitoring: "Jarraipena",
-        configDesc: "Portaera definizioa",
-        executionDesc: "Prozesatu eta exekutatu",
-        monitoringDesc: "Jarraitu eta optimizatu",
-        title: "Lan-fluxu"
+        monitoring: "Jarraipena"
       }
     },
     footer: {
@@ -344,16 +293,7 @@ export const translations = {
       partner1: "AI Innovation Partner",
       partner2: "Basque Government Agency",
       copyright: "Eskubide guztiak gordeta.",
-      trademark: "MattinAI marka erregistratua da eta LKS Next-en jabetza intelektuala. Baimenik gabeko erabilera edo erreprodukzioa debekatuta dago.",
-      description: "AI tresna-kutxa integrala aplikazio adimentsuak indartzen dituena.",
-      resources: "Baliabideak",
-      documentation: "Dokumentazioa",
-      repository: "GitHub Biltegi",
-      offices: "OFICINAS",
-      headquarters: "SEDE SOCIAL"
+      trademark: "MattinAI marka erregistratua da eta LKS Next-en jabetza intelektuala. Baimenik gabeko erabilera edo erreprodukzioa debekatuta dago."
     }
   }
-} as const;
-
-export type Language = keyof typeof translations;
-export type TranslationKey = typeof translations.en;
+};
