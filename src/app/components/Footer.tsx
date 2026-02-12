@@ -1,8 +1,8 @@
 import { useLanguage } from '../i18n/LanguageContext';
 import { Github, Mail, MapPin, Phone } from 'lucide-react';
-import logo from 'figma:asset/2458237f843d769be541c33a0f4407ffe9d6cc61.png';
-import lksNextLogo from 'figma:asset/29a87c8664540d150024bc9ce07f05798b11a9cf.png';
-import grupoSpriLogo from 'figma:asset/5b19de8244f97af9768345901065838248715026.png';
+import logo from '@/assets/2458237f843d769be541c33a0f4407ffe9d6cc61.png';
+import lksNextLogo from '@/assets/29a87c8664540d150024bc9ce07f05798b11a9cf.png';
+import grupoSpriLogo from '@/assets/5b19de8244f97af9768345901065838248715026.png';
 
 export function Footer() {
   const { t } = useLanguage();

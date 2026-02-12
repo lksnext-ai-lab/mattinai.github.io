@@ -2,7 +2,7 @@ import { Menu, Github, BookOpen } from 'lucide-react';
 import { useState } from 'react';
 import { useLanguage } from '../i18n/LanguageContext';
 import { Language } from '../i18n/translations';
-import logo from 'figma:asset/2458237f843d769be541c33a0f4407ffe9d6cc61.png';
+import logo from '@/assets/2458237f843d769be541c33a0f4407ffe9d6cc61.png';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
