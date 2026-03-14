@@ -16,7 +16,7 @@ export function Footer() {
             {/* Brand Section */}
             <div>
               <img src={logo} alt="MattinAI Logo" className="h-10 mb-4" />
-              <p className="text-gray-400 text-sm leading-relaxed mb-4">
+              <p className="text-gray-400 text-sm leading-relaxed mb-4 max-w-xs">
                 {t.footer.description}
               </p>
               <div className="flex gap-3">
@@ -54,6 +54,11 @@ export function Footer() {
                   </a>
                 </li>
                 <li>
+                  <a href="#quickstart" className="hover:text-[#F26B3A] transition-colors">
+                    {t.footer.quickstart}
+                  </a>
+                </li>
+                <li>
                   <a href="#features" className="hover:text-[#F26B3A] transition-colors">
                     {t.nav.features}
                   </a>
@@ -61,6 +66,11 @@ export function Footer() {
                 <li>
                   <a href="#architecture" className="hover:text-[#F26B3A] transition-colors">
                     {t.nav.architecture}
+                  </a>
+                </li>
+                <li>
+                  <a href="#licensing" className="hover:text-[#F26B3A] transition-colors">
+                    {t.footer.licensing}
                   </a>
                 </li>
               </ul>
