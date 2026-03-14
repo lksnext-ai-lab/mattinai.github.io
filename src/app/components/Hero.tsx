@@ -144,7 +144,7 @@ export function Hero() {
                   </div>
                   <div>
                     <div className="text-white font-bold">MattinAI Core</div>
-                    <div className="text-gray-400 text-sm">v2.0.0</div>
+                    <div className="text-gray-400 text-sm">v0.3.18</div>
                   </div>
                 </div>
                 
