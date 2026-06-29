@@ -1,0 +1,129 @@
+---
+title: "Embedding Services"
+description: "Connect embedding models used to vectorize content for RAG silos."
+---
+
+An **Embedding Service** is a named connection to an embedding model stored inside an App. Silos use an Embedding Service to convert document chunks and web content into vector representations at ingest time. Every Silo must reference exactly one Embedding Service.
+
+<Figure src="/images/ws-embedding-services.png" alt="Embedding Services page in Mattin AI" caption="The Embedding Services page lists all embedding model connections in an App. Each service is selected when creating a Silo and determines how document chunks are vectorized for RAG retrieval." />
+
+<Callout type="info">
+**System Embedding Services** — configured by a platform administrator with no App scope (`app_id` is `NULL`) — are also selectable when creating a Silo. They appear in the Silo's embedding service selector alongside the App's own services.
+</Callout>
+
+## Prerequisites
+
+- An App with at least the **Administrator** role (Editors and Viewers see the list but cannot create or edit services).
+- Credentials from your embedding provider.
+
+## Supported providers
+
+| Provider | Value in API | Supports model listing | Notes |
+|---|---|---|---|
+| **OpenAI** | `OpenAI` | Yes | Text embedding models (e.g., `text-embedding-3-small`) |
+| **Mistral AI** | `MistralAI` | Yes | Mistral embedding models |
+| **Google AI Studio** | `Google` | Yes | Gemini embedding models via the AI Studio API |
+| **Ollama** | `Ollama` | Yes (via `/api/tags`) | Local Ollama instance for embeddings |
+| **HuggingFace Inference** | `Custom` | No — manual entry | HuggingFace Inference API; model ID entered manually |
+| **Azure OpenAI** | `Azure` | No — manual entry | Azure OpenAI embedding deployments |
+| **Google Cloud (Vertex AI)** | `GoogleCloud` | No — manual entry | Vertex AI embedding models with service-account auth |
+
+## Create an Embedding Service (wizard)
+
+Embedding Services use the same 4-step wizard as AI Services.
+
+<Steps>
+  <Step>
+  ### Step 1 — Provider
+  Select your embedding provider from the provider cards. The available providers shown are filtered to those that support embeddings.
+  </Step>
+  <Step>
+  ### Step 2 — Credentials
+  Enter provider credentials. The fields are identical to those in [AI Services](/workspace/ai-services) for the same provider, with the following specifics:
+
+  <Tabs items={["OpenAI", "Mistral AI", "Google AI Studio", "Ollama", "HuggingFace Inference", "Azure OpenAI", "Google Cloud (Vertex AI)"]}>
+    <Tab value="OpenAI">
+    | Field | Description |
+    |---|---|
+    | **API Key** | OpenAI API key (`sk-...`). Required. |
+    </Tab>
+    <Tab value="Mistral AI">
+    | Field | Description |
+    |---|---|
+    | **API Key** | Mistral API key. Required. |
+    </Tab>
+    <Tab value="Google AI Studio">
+    | Field | Description |
+    |---|---|
+    | **API Key** | Google AI Studio key (`AIza...`). Required. |
+    </Tab>
+    <Tab value="Ollama">
+    | Field | Description |
+    |---|---|
+    | **Base URL** | Ollama host (e.g., `http://localhost:11434`). Required. |
+    | **API Key** | Optional bearer token. |
+    </Tab>
+    <Tab value="HuggingFace Inference">
+    | Field | Description |
+    |---|---|
+    | **API Key** | HuggingFace token (`hf_...`). Required. |
+    | **Base URL** | Model ID or custom endpoint (e.g., `sentence-transformers/all-MiniLM-L6-v2`). Required. |
+
+    HuggingFace Inference does not expose a model listing endpoint; the model ID is entered manually in the next step.
+    </Tab>
+    <Tab value="Azure OpenAI">
+    | Field | Description |
+    |---|---|
+    | **API Key** | Azure OpenAI resource key. Required. |
+    | **Azure endpoint** | Resource endpoint URL. Required. |
+    | **API version** | Azure API version string. |
+    </Tab>
+    <Tab value="Google Cloud (Vertex AI)">
+    | Field | Description |
+    |---|---|
+    | **Service Account JSON** | Full service account key file contents. Required. |
+    | **GCP Project ID** | Your Google Cloud project ID. Required. |
+    | **Region (location)** | Vertex AI region (e.g., `europe-west1`). |
+    </Tab>
+  </Tabs>
+  </Step>
+  <Step>
+  ### Step 3 — Model
+  For providers that support model listing, select from the fetched list. For providers without a listing endpoint (HuggingFace, Azure, Google Cloud), type the model identifier directly.
+  </Step>
+  <Step>
+  ### Step 4 — Confirm
+  Review the auto-generated service name (`{Provider} - {Model}`), optionally run **Test Connection**, and click **Save**.
+  </Step>
+</Steps>
+
+## Managing services
+
+From the **Actions** menu on each row you can export, edit, or delete a service. You can also **Import** a JSON export file using the **Import** button in the page header.
+
+<Callout type="warn">
+Changing the Embedding Service on a Silo after documents have already been ingested will make existing vectors inconsistent with new ones, because the two sets will be in different embedding spaces. Re-index all documents after changing the service.
+</Callout>
+
+## Connecting an Embedding Service to a Silo
+
+An Embedding Service is selected when creating or editing a Silo. The service is stored in the Silo's `embedding_service_id` field and used for every document chunk ingested — whether from a Repository file upload or a Domain web crawl.
+
+See [Silos and RAG](/knowledge-rag/silos-and-rag) for the full Silo setup flow.
+
+## Related
+
+<Cards>
+  <Card title="Silos and RAG" href="/knowledge-rag/silos-and-rag">
+    Create knowledge bases that use an Embedding Service to vectorize content
+  </Card>
+  <Card title="AI Services" href="/workspace/ai-services">
+    Connect language models for agents — a separate service type
+  </Card>
+  <Card title="Export and Import" href="/workspace/export-import">
+    Export Embedding Service configurations and import them into other Apps
+  </Card>
+  <Card title="Core Concepts" href="/getting-started/core-concepts">
+    Understand how Embedding Services relate to Silos and the entity model
+  </Card>
+</Cards>

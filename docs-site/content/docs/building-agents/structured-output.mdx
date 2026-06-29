@@ -1,0 +1,144 @@
+---
+title: "Structured Output"
+description: "Define JSON schemas (data structures) so agents return structured, validated data."
+---
+
+By default, agents return free-form text. When you attach a **Data Structure** (also called an Output Parser internally), the agent is required to return a JSON object that matches a schema you define. At runtime, the schema is compiled into a Pydantic model and injected into the agent's system prompt as format instructions.
+
+Use structured output when downstream code needs to consume the agent's response programmatically — data extraction pipelines, API integrations, form filling, or classification tasks.
+
+<Figure src="/images/ba-structured-output.png" alt="Data Structures management page in Mattin AI" caption="The Data Structures page is where you create and manage JSON schemas. Each schema can be attached to an agent to enforce typed, structured output on every response." />
+
+## How it works
+
+1. You define a schema (a list of typed fields) in the Data Structures settings page.
+2. You attach the schema to an agent via the **Configuration** tab.
+3. At execution time, the backend generates a Pydantic model from the schema and appends `<output_format_instructions>` to the agent's system prompt.
+4. The LLM returns a JSON object conforming to the schema. LangChain parses and validates it.
+5. If the response is already a Pydantic model instance or a dict (from the provider's native structured output), it is returned directly. Otherwise, any `\`\`\`json` wrapper is stripped and the string is parsed.
+
+## Creating a data structure
+
+Data Structures live under **App Settings > Data Structures**. An ADMINISTRATOR role is required.
+
+<Steps>
+  <Step>
+    ### Open the Data Structures page
+
+    In your App, navigate to **Settings** and select **Data Structures**. Click **Create Data Structure**.
+  </Step>
+
+  <Step>
+    ### Name and describe the schema
+
+    | Field | Notes |
+    |-------|-------|
+    | **Name** | Required. Used to identify the schema in the agent form. |
+    | **Description** | Optional. Helps you understand what this schema is for. |
+  </Step>
+
+  <Step>
+    ### Define the fields
+
+    Add one or more fields. Each field has:
+
+    | Property | Required | Notes |
+    |----------|----------|-------|
+    | **Name** | Yes | The JSON key name. |
+    | **Type** | Yes | `string`, `int`, `float`, `bool`, or a reference to another Data Structure for nested objects. |
+    | **Description** | Recommended | Passed to the LLM as part of format instructions. Clear descriptions improve compliance. |
+
+    The form shows a live field count badge. Schemas reference other Data Structures to build nested objects.
+  </Step>
+
+  <Step>
+    ### Save
+
+    Click **Create Data Structure**. The schema can now be attached to agents.
+  </Step>
+</Steps>
+
+## Attaching a data structure to an agent
+
+<Steps>
+  <Step>
+    ### Open the agent form, Configuration tab
+
+    Go to **Agents**, select an agent, go to the **Configuration** tab.
+  </Step>
+
+  <Step>
+    ### Enable Data Structure
+
+    Check the **Data Structure** checkbox. A dropdown appears listing all Data Structures in your App. Select the schema you want to use.
+  </Step>
+
+  <Step>
+    ### Save the agent
+
+    Click **Save Changes**. The agent now enforces structured output on every response.
+  </Step>
+</Steps>
+
+## Example: sentiment analysis schema
+
+**Fields defined in the Data Structure:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `summary` | `string` | A one-sentence summary of the message. |
+| `sentiment` | `string` | One of: positive, neutral, negative. |
+| `action_required` | `bool` | Whether a human action is needed. |
+
+**Agent response with this schema attached:**
+
+```json
+{
+  "summary": "The customer is happy with the product but had a shipping issue.",
+  "sentiment": "positive",
+  "action_required": true
+}
+```
+
+## Export and import
+
+Data Structures can be exported as JSON files and imported into other Apps:
+
+- **Export**: Click the **Export** action on any Data Structure row. Downloads a `.json` file.
+- **Import**: Click **Import** on the Data Structures page. If a structure with the same name already exists, you can choose to skip, overwrite, or rename on import.
+
+## Field reference
+
+The `OutputParser` model fields:
+
+| Model field | Type | Description |
+|-------------|------|-------------|
+| `name` | `String(255)` | Required. Schema identifier shown in the agent form. |
+| `description` | `String(1000)` | Optional free-text description. |
+| `fields` | `JSON` | List of field definitions — each with `name`, `type`, `description`. |
+| `app_id` | FK | Scoped to an App. |
+
+<Callout type="info">
+  Structured output works best with capable models (GPT-4o, Claude 3+, Gemini 1.5+). Smaller or older models may not reliably follow complex schemas. The Playground renders structured output in a readable format rather than raw JSON.
+</Callout>
+
+<Callout type="warn">
+  If the LLM fails to produce valid JSON, the platform returns the raw response string rather than a parsed object. Build error handling into any code that consumes structured agent output.
+</Callout>
+
+## When to use structured output
+
+<Cards>
+  <Card title="Data extraction" href="/building-agents/agents">
+    Pull specific fields from documents or user input with reliable key names and types.
+  </Card>
+  <Card title="Classification" href="/building-agents/playground">
+    Return a fixed category or enum value the calling system can act on.
+  </Card>
+  <Card title="OCR Agents" href="/building-agents/ocr-agents">
+    Combine structured output with OCR to extract typed fields from scanned documents.
+  </Card>
+  <Card title="Agent as Tool" href="/building-agents/agent-as-tool">
+    A tool-agent with structured output returns a typed object the calling agent can inspect.
+  </Card>
+</Cards>

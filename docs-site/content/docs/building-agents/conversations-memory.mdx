@@ -1,0 +1,145 @@
+---
+title: "Conversations & Memory"
+description: "How conversation memory, summarization, and history work, and how to configure them."
+---
+
+Every chat session with an agent is a **Conversation** — a persistent thread stored in the database with its own message history. When an agent has memory enabled, the LangGraph `AsyncPostgresSaver` checkpointer keeps state between turns so the agent remembers what was said earlier in the same thread.
+
+Memory is always **per-conversation**: two different conversations with the same agent never share state.
+
+## Memory configuration
+
+Memory is configured per agent. To enable it, open the agent form, go to the **Configuration** tab, and check the **Conversational** checkbox under Capabilities. The three memory parameters then appear on the **Prompts** tab under **Memory Management**.
+
+| Parameter | UI label | Default | Description |
+|-----------|----------|---------|-------------|
+| `has_memory` | Conversational | `false` (UI form default; the ORM column has no server-side default) | Enables the PostgreSQL checkpointer and `SummarizationMiddleware`. |
+| `memory_max_messages` | Max Messages | `20` | Number of messages to preserve after summarization (`keep=("messages", N)`). |
+| `memory_max_tokens` | Token Limit | `4000` | Token count that triggers summarization (`trigger=("tokens", N)`). |
+| `memory_summarize_threshold` | Summarize Threshold | `20` | Max tokens sent to the summarizer LLM (`trim_tokens_to_summarize`). |
+
+<Callout type="info">
+  The default summarization threshold (`20`) is defined as `DEFAULT_MEMORY_SUMMARIZE_THRESHOLD` in `backend/models/agent.py` and referenced everywhere memory configuration is applied. Override it per agent using the Summarize Threshold field.
+</Callout>
+
+## How summarization works
+
+The backend uses LangChain's `SummarizationMiddleware`:
+
+1. After each turn, the middleware counts the token length of the conversation history.
+2. When the total exceeds **Token Limit** (`memory_max_tokens`), summarization is triggered.
+3. Older messages — up to **Summarize Threshold** tokens' worth — are sent to the same LLM to be summarized.
+4. The summary replaces the older messages, and the conversation continues with the most recent **Max Messages** messages preserved.
+
+This hybrid strategy keeps the effective context window manageable without discarding conversation history entirely.
+
+## Using conversations in the Playground
+
+The Playground is the interactive chat interface for an agent. Each session uses one conversation thread.
+
+<Steps>
+  <Step>
+    ### Open the Playground
+
+    Go to **Agents**, find the agent, and click the **Playground** icon (or open it from the agent detail page). The page title reads **Agent Playground**.
+  </Step>
+
+  <Step>
+    ### Start or resume a conversation
+
+    The **Conversation Sidebar** on the left lists all your past conversations for this agent. Click any conversation to resume it, or click **New Conversation** to start a fresh thread.
+
+    When you create a new conversation, the previous conversation is preserved in history — it is not deleted.
+  </Step>
+
+  <Step>
+    ### Send a message
+
+    Type a message in the input area and press Enter or click Send. Responses stream word by word via Server-Sent Events. Click **Stop** to interrupt a response mid-stream.
+  </Step>
+
+  <Step>
+    ### Attach files
+
+    Click the paperclip / attachment icon to attach a file to your message. Supported types:
+
+    | Type | How the agent uses it |
+    |------|-----------------------|
+    | PDF | Text extracted and appended to the message |
+    | Images (PNG, JPG) | Analyzed by the LLM if multimodal, or OCR-extracted |
+    | Audio (MP3, WAV) | Transcribed to text via Whisper |
+    | TXT, MD | Read directly |
+
+    Each conversation has its own isolated file context.
+  </Step>
+</Steps>
+
+## Conversation lifecycle
+
+Conversations are created automatically when the first message is sent to an agent, or explicitly via **New Conversation**. Each conversation maps to a LangGraph checkpointer thread with ID `thread_{agent_id}_{session_id}`.
+
+| Action | Effect |
+|--------|--------|
+| Continue a conversation | Sends the message into the existing thread; memory applies. |
+| New Conversation | Creates a fresh thread with no prior context. |
+| Delete a conversation | Removes the metadata record; the LangGraph checkpoint is also cleared. |
+
+<Callout type="warn">
+  Deleting a conversation is permanent. The message history and any associated file references for that thread are removed.
+</Callout>
+
+## Agents without memory
+
+When `has_memory` is `false`, each message is processed independently with no checkpointer. The conversation metadata (title, timestamps) is still stored, but the agent has no access to previous turns when generating a response.
+
+Use stateless agents for:
+- Single-turn extraction or classification tasks where prior context is irrelevant.
+- Reducing latency and LLM cost in high-volume API scenarios.
+- Workflows where each request is fully self-contained.
+
+## Memory configuration reference
+
+The `Agent` model memory fields (from `backend/models/agent.py`):
+
+```python
+has_memory = Column(Boolean)
+memory_max_messages = Column(Integer, default=20, nullable=False)
+memory_max_tokens = Column(Integer, default=4000, nullable=True)
+memory_summarize_threshold = Column(Integer, default=DEFAULT_MEMORY_SUMMARIZE_THRESHOLD, nullable=False)
+```
+
+At agent creation time, the `SummarizationMiddleware` is configured as:
+
+```python
+SummarizationMiddleware(
+    model=llm,
+    trigger=("tokens", memory_max_tokens),    # e.g. 4000
+    keep=("messages", memory_max_messages),   # e.g. 20
+    trim_tokens_to_summarize=memory_summarize_threshold,  # e.g. 20
+)
+```
+
+## Tuning memory for your use case
+
+| Use case | Suggested settings |
+|----------|--------------------|
+| Long support sessions | Increase `memory_max_messages` to 40, `memory_max_tokens` to 8000. |
+| Cost-sensitive deployments | Lower `memory_max_tokens` to 1500–2000 to trigger summarization earlier. |
+| Complex reasoning tasks | Increase `memory_summarize_threshold` so more context is sent to the summarizer. |
+| Short Q&A sessions | Keep defaults or disable memory entirely. |
+
+<Callout type="info">
+  Summarization uses the same LLM configured for the agent. For agents using a slow or expensive model, summarization adds latency and cost. Consider using a cheaper text model for the text pass and a capable model only where needed.
+</Callout>
+
+<Cards>
+  <Card title="Playground" href="/building-agents/playground">
+    Explore the full Playground interface
+  </Card>
+  <Card title="Agents" href="/building-agents/agents">
+    Agent configuration reference
+  </Card>
+  <Card title="API Reference" href="/api-reference/introduction">
+    Manage conversations via the public API
+  </Card>
+</Cards>

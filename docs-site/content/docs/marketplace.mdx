@@ -1,0 +1,187 @@
+---
+title: "Agent Marketplace"
+description: "Publish agents for platform users to discover and chat with, and browse agents shared by other teams."
+---
+
+The **Agent Marketplace** is a platform-wide catalog where teams publish agents so that other authenticated users can discover, chat with, and rate them — without needing their own App or AI Service configuration.
+
+Use the Marketplace when you want to:
+- share a polished agent across your organisation without granting App access to everyone,
+- consume a ready-made agent (e.g. a knowledge-base assistant) built by another team, or
+- collect usage feedback via star ratings before broader rollout.
+
+<Figure src="/images/marketplace.png" alt="Marketplace browse page in Mattin AI" caption="The Marketplace browse page where users discover published agents. Agents can be filtered by category, sorted by rating or date, and searched by name or tag." />
+
+<Callout type="info">
+Only agents whose `marketplace_visibility` is set to `private` or `public` appear in the catalog. Agents marked as tools (`is_tool = true`) cannot be published to the Marketplace.
+</Callout>
+
+## Visibility levels
+
+| Level | Who can see and chat |
+|---|---|
+| **Unpublished** (default) | Members of the owning App only |
+| **Private** | Members and accepted collaborators of the owning App |
+| **Public** | All authenticated platform users |
+
+`PRIVATE` is useful for internal review before wider release. Switching from `PUBLIC` back to `UNPUBLISHED` immediately removes the agent from all users' catalogs.
+
+---
+
+## Publishing an agent
+
+You need **Editor** role or higher on the App that owns the agent.
+
+<Steps>
+  <Step>
+  ### Open the agent form
+  In your App, open **AI Agents** and click the agent you want to publish, or create a new one. See [Agents](/building-agents/agents) for agent setup.
+  </Step>
+  <Step>
+  ### Go to the Marketplace tab
+  On the agent form, click the **Marketplace** tab. If the agent has not been saved yet, you are prompted to save first.
+  </Step>
+  <Step>
+  ### Set visibility
+  Under **Marketplace Visibility**, choose **Private** or **Public**. The profile fields become visible immediately after changing visibility away from Unpublished.
+
+  <Callout type="warn">
+  Tool agents (agents with **Use as Tool** enabled) cannot be published. The visibility selector is disabled for them.
+  </Callout>
+  </Step>
+  <Step>
+  ### Fill in the marketplace profile
+  Complete the profile fields that will appear in the catalog. The table in the [Profile field reference](#profile-field-reference) section describes each field. At minimum, a short description and a category help users understand what the agent does.
+  </Step>
+  <Step>
+  ### Save the profile
+  Click **Save Marketplace Profile**. The profile is stored separately from the agent's core configuration — you can update it at any time without affecting agent behavior.
+  </Step>
+</Steps>
+
+### Profile field reference
+
+| Field | Limit | Purpose |
+|---|---|---|
+| `display_name` | 255 chars | Name shown in catalog cards. Falls back to the agent's own name if blank. |
+| `short_description` | 200 chars | One-line summary shown on catalog cards and in search results. |
+| `long_description` | Markdown, no limit | Full description rendered on the agent's detail page. Supports headers, lists, and code blocks. |
+| `category` | Select | Main category used for filtering. |
+| `tags` | max 5 strings | Free-form tags indexed for search. |
+| `icon_url` | 500 chars | URL to a square icon image displayed on cards and the detail page. |
+| `cover_image_url` | 500 chars | URL to a banner image shown at the top of the detail page. |
+
+**Available categories**: Productivity, Research, Writing, Code, Data Analysis, Customer Support, Education, Other.
+
+---
+
+## Browsing the catalog
+
+<Steps>
+  <Step>
+  ### Open the Marketplace
+  Click **Marketplace** in the main navigation. The home dashboard shows your recent marketplace conversations and a shortcut to browse agents.
+  </Step>
+  <Step>
+  ### Browse and filter
+  Click **Browse Agents** to open the full catalog. Use the controls to narrow results:
+
+  - **Search box** — full-text search on display name, description, and tags (debounced 300 ms).
+  - **Category** dropdown — filter by a single category.
+  - **Sort** — Top Rated (by average star rating, then rating count, then alphabetically), Newest, or A–Z.
+  - **My Apps** toggle — limit results to agents from Apps you belong to.
+
+  Results are paginated at 20 agents per page (default; the API accepts up to 100).
+  </Step>
+  <Step>
+  ### Open the detail page
+  Click any agent card to open its detail page. The detail page shows the full description (rendered Markdown), category, tags, whether the agent has a knowledge base or memory enabled, its publication date, your past conversations with it, and the community rating.
+  </Step>
+</Steps>
+
+---
+
+## Chatting with a marketplace agent
+
+<Steps>
+  <Step>
+  ### Start a new conversation
+  On the agent's detail page, click **Start New Chat**. A new conversation is created and you are taken directly to the chat view.
+  </Step>
+  <Step>
+  ### Send messages
+  The chat interface works identically to the App Playground. You can type messages and optionally attach files. Both synchronous and streaming (`/chat/stream`) modes are available — the UI uses streaming by default.
+  </Step>
+  <Step>
+  ### Attach files (optional)
+  Use the file attachment button to upload documents for the agent to process in that turn. Uploaded files are scoped to your conversation and are accessible only to you. Supported operations:
+
+  - Upload a file to the conversation.
+  - Reference previously uploaded files in a message.
+  - Remove a file you no longer need.
+  - Download a file via a cryptographically signed URL.
+  </Step>
+  <Step>
+  ### Resume past conversations
+  Your previous conversations with an agent appear in the **Your Conversations** panel on the detail page and in the **My Recent Conversations** list on the Marketplace home. Click any row to reopen that conversation.
+  </Step>
+</Steps>
+
+<Callout type="info">
+Marketplace conversations are tracked separately from App Playground conversations. They use `ConversationSource.MARKETPLACE` internally and do not appear in the App's conversation list.
+</Callout>
+
+---
+
+## Ratings
+
+After having at least one conversation with an agent, you can rate it from 1 to 5 stars.
+
+- Open the agent's detail page and use the **Rate this agent** star widget in the sidebar.
+- Submitting a rating when you already have one **replaces** the previous value — there is one rating per user per agent.
+- The agent's `rating_avg` and `rating_count` in the catalog are updated atomically on each submission.
+- Agents are sorted "Top Rated" by average rating (highest first), then by number of ratings, then alphabetically.
+
+---
+
+## Usage quotas
+
+Platform administrators can configure a **monthly call quota** (`marketplace_call_quota` system setting) that limits how many messages a user can send to marketplace agents in a calendar month (UTC).
+
+- To check your current usage, the backend exposes `GET /internal/marketplace/quota-usage`.
+- When a quota is set and you exceed it, chat requests return **HTTP 429** with a message showing your usage and when the quota resets (the first day of the next UTC month).
+- Omniadmin users (listed in the `AICT_OMNIADMINS` env var) are always exempt from quotas.
+- A quota of `0` means no limit is enforced.
+
+---
+
+## Access control summary
+
+| Action | Required role |
+|---|---|
+| Browse public agents | Any authenticated user |
+| Browse private agents | App member or accepted collaborator of the owning App |
+| Start a conversation / chat | Any authenticated user (quota applies) |
+| Rate an agent | Must have at least one conversation with that agent |
+| Update marketplace visibility | Editor or higher on the owning App |
+| Create or update a marketplace profile | Editor or higher on the owning App |
+| Read own App's marketplace profile | Viewer or higher on the owning App |
+
+---
+
+## Related
+
+<Cards>
+  <Card title="Agents" href="/building-agents/agents">
+    Create and configure the agent you want to publish
+  </Card>
+  <Card title="Apps" href="/workspace/apps">
+    Manage the App workspace that owns the agent
+  </Card>
+  <Card title="Playground" href="/building-agents/playground">
+    Test an agent before publishing it to the Marketplace
+  </Card>
+  <Card title="Collaboration & Roles" href="/workspace/collaboration">
+    Understand App roles and how to invite collaborators
+  </Card>
+</Cards>

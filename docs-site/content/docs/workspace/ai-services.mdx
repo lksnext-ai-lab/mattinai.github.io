@@ -1,0 +1,177 @@
+---
+title: "AI Services"
+description: "Connect LLM providers to an App. AI Services supply the language model for every agent."
+---
+
+An **AI Service** is a named connection to an LLM provider stored inside an App. Every agent requires exactly one AI Service — it supplies the provider endpoint, credentials, and the model used to generate responses. You can create as many AI Services as you need and share them across agents in the same App.
+
+<Figure src="/images/ws-ai-services.png" alt="AI Services list page in Mattin AI" caption="The AI Services page lists all LLM provider connections in an App. Each row shows the provider, model, and status badge indicating whether credentials are configured." />
+
+<Callout type="info">
+**System AI Services** — configured by a platform administrator and not scoped to any specific App (`app_id` is `NULL`) — are also available to agents. They appear in the agent's AI Service selector alongside the App's own services. Admins manage system services from the platform admin panel.
+</Callout>
+
+## Prerequisites
+
+- An App with at least the **Administrator** role (Editors and Viewers see the list but cannot create or edit services).
+- Credentials from your LLM provider (API key, endpoint, etc.).
+
+## Supported providers
+
+| Provider | Value in API | Supports model listing | Extra credentials |
+|---|---|---|---|
+| **OpenAI** | `OpenAI` | Yes | API key (`sk-...`) |
+| **Anthropic** | `Anthropic` | Yes | API key (`sk-ant-...`) |
+| **Mistral AI** | `MistralAI` | Yes | API key |
+| **Google AI Studio** | `Google` | Yes | API key (`AIza...`) |
+| **Ollama / Self-hosted** | `Custom` | Yes (via `/api/tags`) | Base URL; optional bearer token |
+| **Azure OpenAI** | `Azure` | No — manual entry | API key, Azure endpoint, API version |
+| **Google Cloud (Vertex AI)** | `GoogleCloud` | No — manual entry | Service Account JSON, GCP Project ID, Region |
+
+<Callout type="info">
+Ollama and any self-hosted endpoint that speaks the Ollama wire protocol share the `Custom` provider value for AI services. The backend builds a `ChatOllama` instance and queries `/api/tags` for the model list.
+</Callout>
+
+## Create an AI Service (wizard)
+
+AI Services are created through a 4-step wizard launched by clicking **Add AI Service**.
+
+<Steps>
+  <Step>
+  ### Step 1 — Provider
+  Choose your LLM provider from the provider cards. The selection determines which credential fields appear in the next step.
+
+  <Figure src="/images/ws-ai-services-wizard.png" alt="Add AI Service provider-selection wizard in Mattin AI" caption="The first step of the Add AI Service wizard shows a card for each supported provider. Selecting a card advances to the credentials step for that provider." />
+  </Step>
+  <Step>
+  ### Step 2 — Credentials
+  Enter the credentials required by the selected provider.
+
+  <Tabs items={["OpenAI", "Anthropic", "Mistral AI", "Google AI Studio", "Ollama / Self-hosted", "Azure OpenAI", "Google Cloud (Vertex AI)"]}>
+    <Tab value="OpenAI">
+    | Field | Description |
+    |---|---|
+    | **API Key** | Your OpenAI API key (`sk-...`). Required. |
+
+    Get your key at [platform.openai.com/api-keys](https://platform.openai.com/api-keys).
+    </Tab>
+    <Tab value="Anthropic">
+    | Field | Description |
+    |---|---|
+    | **API Key** | Your Anthropic API key (`sk-ant-...`). Required. |
+
+    Get your key at [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys).
+    </Tab>
+    <Tab value="Mistral AI">
+    | Field | Description |
+    |---|---|
+    | **API Key** | Your Mistral API key. Required. |
+
+    Get your key at [console.mistral.ai/api-keys](https://console.mistral.ai/api-keys).
+    </Tab>
+    <Tab value="Google AI Studio">
+    | Field | Description |
+    |---|---|
+    | **API Key** | Your Google AI Studio API key (`AIza...`). Required. |
+
+    Generate a key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey).
+    </Tab>
+    <Tab value="Ollama / Self-hosted">
+    | Field | Description |
+    |---|---|
+    | **Base URL** | URL of your Ollama or self-hosted endpoint (e.g., `http://localhost:11434`). Required. |
+    | **API Key** | Optional bearer token if the endpoint is behind authentication. |
+    </Tab>
+    <Tab value="Azure OpenAI">
+    | Field | Description |
+    |---|---|
+    | **API Key** | The key from your Azure OpenAI resource. Required. |
+    | **Azure endpoint** | Your resource endpoint (e.g., `https://my-resource.openai.azure.com`). Required. |
+    | **API version** | Azure API version string (e.g., `2024-08-01-preview`). |
+
+    Get resource details at the Azure Portal under AI Services > OpenAI.
+    </Tab>
+    <Tab value="Google Cloud (Vertex AI)">
+    The wizard shows three inputs for Google Cloud. Enter them as follows:
+
+    | UI input | What to enter |
+    |---|---|
+    | **Service Account JSON** | Paste the full contents of the `.json` key file downloaded from Google Cloud IAM. Required. |
+    | **GCP Project ID** | Your Google Cloud project ID (e.g., `my-project-123456`). Required. |
+    | **Region (location)** | The Vertex AI region where your models are deployed (e.g., `europe-west1`, `us-central1`). |
+
+    <Callout type="info">
+    These three inputs are stored internally in the `api_key`, `base_url`, and `api_version` database fields respectively. Use the UI labels when filling out the form — do not reference the underlying field names directly.
+    </Callout>
+
+    Create a service account at [console.cloud.google.com/iam-admin/serviceaccounts](https://console.cloud.google.com/iam-admin/serviceaccounts).
+    </Tab>
+  </Tabs>
+
+  Credentials are used to fetch the model list in the next step. They are not persisted until you complete the wizard.
+  </Step>
+  <Step>
+  ### Step 3 — Model
+  For providers that support model listing (OpenAI, Anthropic, Mistral AI, Google AI Studio, Ollama), Mattin AI fetches the available models and presents them in a searchable list. Select the model you want this service to use.
+
+  For providers that do not expose a model listing endpoint (Azure OpenAI, Google Cloud Vertex AI), you type the deployment name or model ID directly.
+  </Step>
+  <Step>
+  ### Step 4 — Confirm
+  Review the service name (auto-generated as `{Provider} - {Model}` and deduplicated if needed), optionally toggle **Supports video** for multimodal providers, and optionally run **Test Connection** to verify the credentials and model are reachable before saving.
+
+  Click **Save** to create the service.
+  </Step>
+</Steps>
+
+## Service list and status badges
+
+The AI Services table shows all services in the App (plus system services). Each row has a **Status** badge:
+
+| Badge | Meaning |
+|---|---|
+| **Ready** (green) | Service has credentials stored and is ready for agents to use. |
+| **API Key Required** (yellow) | No API key is configured. The service cannot be used by agents until credentials are added. |
+
+## Test Connection
+
+From the Actions menu on any service row, click **Test Connection**. Mattin AI sends a minimal completion request to the provider and reports success or failure in a modal. Use this after saving or after rotating credentials.
+
+## Managing services
+
+From the **Actions** menu on each row:
+
+| Action | Description |
+|---|---|
+| **Test Connection** | Verify credentials and model reachability. |
+| **Export** | Download the service configuration as a JSON file (API key is removed from the export). |
+| **Edit** | Open the compact editor to update credentials or model. |
+| **Copy** | Duplicate the service (credentials are not copied; you must re-enter them). |
+| **Delete** | Remove the service. Agents currently using this service will lose their LLM configuration. |
+
+You can also **Import** a previously exported JSON file using the **Import** button in the page header. See [Export and Import](/workspace/export-import) for conflict handling options.
+
+<Callout type="warn">
+Only App **Administrators** and **Owners** can create, edit, copy, or delete AI Services. Editors and Viewers see the table in read-only mode.
+</Callout>
+
+## Connecting an AI Service to an agent
+
+After creating an AI Service, open any agent's configuration and select the service from the **AI Service** dropdown. See [Agents](/building-agents/agents) for the full agent setup flow.
+
+## Related
+
+<Cards>
+  <Card title="Agents" href="/building-agents/agents">
+    Assign an AI Service to an agent to select its language model
+  </Card>
+  <Card title="Embedding Services" href="/workspace/embedding-services">
+    Connect embedding models for RAG — a separate service type
+  </Card>
+  <Card title="Export and Import" href="/workspace/export-import">
+    Export AI Service configurations and import them into other Apps
+  </Card>
+  <Card title="Core Concepts" href="/getting-started/core-concepts">
+    Understand how AI Services relate to agents and the rest of the entity model
+  </Card>
+</Cards>

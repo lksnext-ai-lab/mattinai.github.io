@@ -1,0 +1,140 @@
+---
+title: "Quickstart"
+description: "Create an App, connect an LLM, configure an Agent, and get a response from the Playground — end to end."
+---
+
+By the end of this guide you will have a running Mattin AI agent that responds to messages. The complete path is: **sign in → create an App → add an AI Service → create an Agent → chat in the Playground**.
+
+## Prerequisites
+
+| What you need | Notes |
+|---------------|-------|
+| A running Mattin AI instance | Self-host via Docker (`docker compose up`) or access a hosted installation. See the [platform overview](/getting-started/introduction) to learn what Mattin AI provides. |
+| Credentials for an LLM provider | An OpenAI, Anthropic, Azure OpenAI, MistralAI, Google, or compatible API key. |
+| A platform role of Editor or higher | Platform Viewers cannot create Apps or Agents. |
+
+<Callout type="info">
+  If you are using the `AICT_LOGIN=FAKE` development mode, the login screen shows a pre-filled email and password — just click **Sign in**. On a production deployment with `AICT_LOGIN=OIDC`, you will be redirected to your identity provider (for example, Microsoft Entra) and returned to the platform after authenticating.
+</Callout>
+
+---
+
+<Steps>
+
+<Step>
+### Sign in
+
+Open Mattin AI in your browser.
+
+- **SaaS / LOCAL mode** (`AICT_LOGIN=LOCAL`): enter your email and password on the login page and click **Sign in**.
+- **OIDC mode** (`AICT_LOGIN=OIDC`): click **Sign in with your organization account**. You will be redirected to your identity provider (Microsoft Entra or equivalent) and returned to the platform once authenticated.
+- **Development mode** (`AICT_LOGIN=FAKE`): the form is pre-filled. Click **Sign in**.
+
+After authenticating you land on the **My Apps** page.
+</Step>
+
+<Step>
+### Create an App
+
+An App is the workspace that holds all your agents, knowledge bases, and LLM connections.
+
+1. On the **My Apps** page, click **+ New App** (top-right corner). The button is only visible to users with the Editor platform role or higher.
+2. In the **Create New App** modal, type a name — for example, `My First App`.
+3. Click **Create App**. The new App appears in the table and you are listed as its **Owner**.
+
+<Figure src="/images/app-create-modal.png" alt="Create New App modal with App Name field filled in" caption="The Create New App modal. Enter a name and click Create App to provision the workspace." />
+
+You can now open the App by clicking its name in the table.
+</Step>
+
+<Step>
+### Add an AI Service
+
+An AI Service stores the credentials for an LLM provider. Agents cannot respond without one — the Agent form shows an amber warning banner if no AI Services exist in the App.
+
+1. Inside the App, open **Settings → AI Services** from the left sidebar (or navigate to `/apps/{id}/settings/ai-services`).
+2. Click **+ Add AI Service**. A four-step wizard opens:
+   - **Step 1 — Provider**: select your provider (OpenAI, Anthropic, MistralAI, Google AI Studio, Google Cloud (Vertex AI), Azure OpenAI, or Ollama / Self-hosted).
+   - **Step 2 — Credentials**: enter the API key. Azure also requires an endpoint URL and API version; Google Cloud requires a service account JSON, a GCP project ID, and a region (for example, `europe-west1`). Providers with fixed cloud endpoints (OpenAI, Anthropic, MistralAI) only need the API key.
+   - **Step 3 — Model**: pick a model from the list (fetched live from the provider) or type a model ID manually for providers that do not support model listing.
+   - **Step 4 — Confirm**: review the summary. Optionally click **Run test** to verify the credentials against the provider before saving, then click **Save**.
+3. The new service appears in the AI Services table with a **Ready** status badge.
+
+<Callout type="info">
+  Click **Test Connection** from the service's action menu to verify the credentials before continuing.
+</Callout>
+</Step>
+
+<Step>
+### Create an Agent
+
+1. In the App, click **Agents** in the left sidebar, then click **New Agent**.
+2. The Agent form opens on the **Basic** tab. Fill in:
+
+<Figure src="/images/agent-form.png" alt="Create Agent form showing the Basic tab with Name and Description fields" caption="The Create Agent form on the Basic tab. The AI Service is selected on the Configuration tab (not shown here) — you must add an AI Service to the App before an agent can respond." />
+
+   - **Name** (required) — for example, `Support Assistant`.
+   - **Description** (optional) — a short summary shown in the UI.
+   - Leave **Agent Type** as **AI Agent** for a standard conversational agent.
+3. Switch to the **Prompts** tab and enter a **System Prompt** — the instructions that define how the agent behaves. For example:
+   ```
+   You are a helpful support assistant. Answer questions clearly and concisely.
+   If you do not know the answer, say so rather than guessing.
+   ```
+4. Switch to the **Configuration** tab:
+   - **AI Service** (required) — select the AI Service you created in the previous step.
+   - **Knowledge Base (Silo)** — leave blank for now; add a Silo later if you need RAG.
+   - **Temperature** — leave at the default (0.7) for a balanced response style.
+5. Click **Create Agent** (bottom-right of the form). You are returned to the Agents list where your new agent is visible.
+</Step>
+
+<Step>
+### Chat in the Playground
+
+1. On the Agents list, click the action menu for your agent and select **Playground** — or navigate directly to `/apps/{id}/agents/{agentId}/playground`.
+2. The **Agent Playground** page opens. A compact header bar shows the agent name, its status badge, its agent type badge, and whether memory or RAG is active.
+3. Type a message in the chat input at the bottom and press **Enter** (or click the send button).
+4. The agent processes your message and streams a response. The first message auto-creates a new conversation.
+
+If the agent does not respond or returns an error, check:
+- The AI Service credentials are correct (use **Test Connection** in Settings → AI Services).
+- The selected model name matches what the provider expects.
+</Step>
+
+</Steps>
+
+---
+
+## What just happened
+
+| Step | What was created | Where it lives |
+|------|-----------------|----------------|
+| Create App | App (workspace) | `My Apps` list |
+| Add AI Service | Stored LLM credentials | App → Settings → AI Services |
+| Create Agent | Agent with system prompt and LLM link | App → Agents |
+| Chat | Conversation (with persisted history if memory is on) | App → Playground |
+
+---
+
+## What next
+
+<Cards>
+  <Card
+    title="Apps guide"
+    href="/workspace/apps"
+  >
+    Inviting collaborators, roles, export/import, and App settings.
+  </Card>
+  <Card
+    title="Agents guide"
+    href="/building-agents/agents"
+  >
+    Memory, temperature, skills, output parsers, tool agents, and OCR agents.
+  </Card>
+  <Card
+    title="Playground guide"
+    href="/building-agents/playground"
+  >
+    Conversation history, prompt editing, API examples, and file attachments.
+  </Card>
+</Cards>

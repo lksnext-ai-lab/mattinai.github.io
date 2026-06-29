@@ -1,0 +1,156 @@
+---
+title: "OCR Agents"
+description: "Dual-LLM agents that extract and structure text from scanned documents and images."
+---
+
+An **OCR Agent** is a specialized agent subtype (`type = ocr_agent`) designed to process scanned PDFs and image-heavy documents. Instead of a single language model, it uses two:
+
+- **Vision model** — a multimodal LLM (e.g., GPT-4o, Gemini) that reads each page as an image and extracts the raw text.
+- **Text model** — a standard LLM that takes the extracted text and structures, cleans, or transforms it into the desired output format.
+
+You can combine an OCR Agent with a [Data Structure](/building-agents/structured-output) to output typed JSON directly from a scanned document.
+
+## When to use OCR Agents
+
+- Scanned PDFs where text extraction tools return garbled or missing text.
+- Invoice, contract, or form processing where field values must be extracted reliably.
+- Documents that mix handwriting, stamps, or low-resolution scans with printed text.
+- Any pipeline where the input is an image and the output needs to be structured data.
+
+<Callout type="info">
+  For documents that already contain selectable text (digital PDFs), a standard agent with file attachment support may be sufficient. OCR Agents are optimized for image-based input.
+</Callout>
+
+## Creating an OCR Agent
+
+<Steps>
+  <Step>
+    ### Create a new agent and select the type
+
+    Go to **Agents**, click **New Agent**. On the **Basic** tab, set **Agent Type** to **OCR Agent**.
+
+    The agent form will switch to the OCR-specific **Configuration** tab layout.
+  </Step>
+
+  <Step>
+    ### Configure the vision model
+
+    On the **Configuration** tab, under **OCR Configuration**:
+
+    <Figure src="/images/ba-ocr-agent.png" alt="OCR Agent Configuration tab showing vision and text model settings" caption="The OCR Configuration section of the agent form. The top half selects the vision model and its system prompt; the bottom half selects the text model used for the structuring pass." />
+
+    - **Vision Model** — select the AI Service that provides the multimodal model. This service reads each PDF page as an image.
+    - **System Prompt (Vision)** — instructions for the vision pass. For example: `"Extract all text visible on the page exactly as it appears. Do not interpret or reformat."`
+
+    <Callout type="warn">
+      The selected AI Service must use a model that supports vision/image input (e.g., `gpt-4o`, `gemini-1.5-flash`, `claude-3-5-sonnet`). Text-only models will fail silently or return errors.
+    </Callout>
+  </Step>
+
+  <Step>
+    ### Configure the text model
+
+    Still on the **Configuration** tab:
+
+    - **Text Model** — select the AI Service for the structuring pass. This can be any text-capable model, including smaller ones.
+    - **System Prompt (Text)** — instructions for the structuring pass. For example: `"Given the extracted text, return the invoice fields: vendor name, date, total amount, and line items."`
+  </Step>
+
+  <Step>
+    ### Optionally attach a Data Structure
+
+    Check the **Data Structure** checkbox and select a schema. The text model will return a JSON object conforming to that schema.
+
+    See [Structured Output](/building-agents/structured-output) for how to create schemas.
+  </Step>
+
+  <Step>
+    ### Save
+
+    Click **Create Agent**. The agent is ready to use via the Playground or the API.
+  </Step>
+</Steps>
+
+## Processing a document
+
+### From the Playground
+
+The Playground detects that the agent is an OCR Agent and shows the **OCR interface** instead of the chat interface.
+
+1. Upload a PDF file using the file upload area.
+2. Click **Process** (or the equivalent submit button).
+3. The agent processes the document and returns the extracted (and optionally structured) text.
+
+### From the internal API
+
+```
+POST /internal/apps/{app_id}/ocr/{agent_id}/process
+Content-Type: multipart/form-data
+
+pdf: <your PDF>
+```
+
+Authentication: session cookie (OIDC or local auth).
+
+### From the public API
+
+```
+POST /public/v1/apps/{app_id}/ocr/{agent_id}/process
+Content-Type: multipart/form-data
+X-API-KEY: <your API key>
+
+pdf: <your PDF>
+```
+
+<Callout type="warn">
+  The public OCR endpoint only accepts PDF files. Uploading a non-PDF file returns HTTP 400: `"Only PDF files are supported"`.
+</Callout>
+
+The response schema is:
+
+```json
+{
+  "text": "Extracted and optionally structured content",
+  "pages": 3,
+  "confidence": 0.95
+}
+```
+
+If a Data Structure is attached and the text model returns valid JSON, `text` will contain the JSON string. For the internal playground endpoint the full page-level breakdown is also available.
+
+## OCR Agent model fields
+
+The `OCRAgent` model extends `Agent` as an `Agent` subtype identified by `type = 'ocr_agent'`:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `vision_service_id` | FK → `AIService` | The multimodal LLM used for the vision (page reading) pass. |
+| `vision_system_prompt` | `Text` | Instructions for the vision model. |
+| `service_id` (inherited) | FK → `AIService` | The text LLM used for the structuring pass. |
+| `text_system_prompt` | `Text` | Instructions for the text model. |
+| `output_parser_id` (inherited) | FK → `OutputParser` | Optional Data Structure for typed JSON output. |
+
+## Pipeline internals
+
+The execution service (`AgentExecutionService.execute_agent_ocr`) works as follows:
+
+1. Each page of the uploaded PDF is converted to an image.
+2. All page images are sent to the vision model with `vision_system_prompt` — the model returns the raw extracted text per page.
+3. The concatenated page text is passed to the text model with `text_system_prompt`.
+4. If an Output Parser is configured, format instructions are appended and the response is parsed as structured JSON.
+5. The result is returned to the caller.
+
+<Cards>
+  <Card title="Structured Output" href="/building-agents/structured-output">
+    Define a JSON schema for the text model to populate
+  </Card>
+  <Card title="Media RAG" href="/knowledge-rag/media-rag">
+    Index scanned documents into a Silo for retrieval
+  </Card>
+  <Card title="AI Services" href="/workspace/ai-services">
+    Configure the vision and text model providers
+  </Card>
+  <Card title="API Reference" href="/api-reference/introduction">
+    OCR endpoints in the public API
+  </Card>
+</Cards>

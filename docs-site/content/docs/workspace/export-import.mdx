@@ -1,0 +1,126 @@
+---
+title: "Export & Import"
+description: "Export an App's configuration to JSON and import it into another App or instance."
+---
+
+Mattin AI can serialize an App's configuration — agents, silos, AI Services, Embedding Services, output parsers, MCP configs, and skills — into a single JSON file. That file can then be imported to create a new App on the same instance or a different one. Export and import are also supported for individual resource types.
+
+## What is included and excluded
+
+### Full App export
+
+| Included | Excluded |
+|---|---|
+| Agents and OCR Agents (configuration only) | Conversation history |
+| Silos (configuration, not vector data) | Vector embeddings |
+| AI Services (credentials removed) | Uploaded files and attachments |
+| Embedding Services (credentials removed) | Usage statistics |
+| Output Parsers | User accounts and permissions |
+| MCP Configs (secrets removed) | API keys |
+| Skills | |
+
+<Callout type="info">
+API keys, credentials, and secrets are always stripped from exports. After importing, re-enter credentials for each AI Service and Embedding Service before using them.
+</Callout>
+
+## Export a full App
+
+Any user with at least the **Viewer** role can export an App.
+
+<Steps>
+  <Step>
+  ### Open the My Apps list
+  Navigate to the home screen showing your Apps.
+  </Step>
+  <Step>
+  ### Open the Actions menu
+  Click the Actions dropdown for the App you want to export.
+  </Step>
+  <Step>
+  ### Click Export Full App
+  Select **Export Full App**. The backend calls `POST /internal/apps/{app_id}/export` and returns a JSON file. The browser downloads it as `app-{slug}-{date}.json`.
+  </Step>
+</Steps>
+
+## Import a full App
+
+Importing always creates a **new** App — it does not overwrite an existing one.
+
+<Steps>
+  <Step>
+  ### Click Import App
+  On the My Apps list, click the **Import App** button at the top of the page. The import modal opens.
+  </Step>
+  <Step>
+  ### Select the export file
+  Click **Select File** and pick a `.json` file previously downloaded from an export. The modal previews the App name read from the file.
+  </Step>
+  <Step>
+  ### Choose a conflict resolution mode
+  Select how to handle name conflicts if a resource with the same name already exists in the destination:
+
+  | Mode | Behavior |
+  |---|---|
+  | **Fail on Conflict** | Import aborts if any resource name already exists. |
+  | **Rename if Exists** | Conflicting resources are imported under a new name you specify. |
+  | **Override Existing** | Existing resources with matching names are updated with the imported configuration. |
+  </Step>
+  <Step>
+  ### Click Import
+  Click **Import**. The backend calls `POST /internal/apps/import` and creates the new App with all its components. A summary is shown on completion, including any warnings (for example, about credentials that need to be re-entered).
+  </Step>
+</Steps>
+
+<Callout type="warn">
+Importing an App never copies credentials. After the import finishes, go to **Settings → AI Services** and **Settings → Embedding Services** in the new App and re-enter the API keys or other credentials for each service. Agents will show **API Key Required** status until credentials are restored.
+</Callout>
+
+## Export and import individual resources
+
+Individual resource types can also be exported and imported from their respective settings pages. This is useful for moving a single agent, silo, or AI Service between Apps without exporting the whole App.
+
+### Supported resource types for individual export/import
+
+| Resource | Settings page | Export button | Import button |
+|---|---|---|---|
+| AI Service | Settings → AI Services | Actions → Export | Import (page header) |
+| Embedding Service | Settings → Embedding Services | Actions → Export | Import (page header) |
+| Agent | Agents list | Actions → Export | Import (page header) |
+| Silo | Silos list | Actions → Export | Import (page header) |
+| Output Parser | Settings → Output Parsers | Actions → Export | Import (page header) |
+| MCP Config | Settings → MCP Configs | Actions → Export | Import (page header) |
+
+Each individual export follows the same conflict resolution flow as the full App import. When importing a Silo, if the export file does not bundle an Embedding Service, the import modal prompts you to select an existing Embedding Service from the target App.
+
+### Conflict modes for individual resources
+
+The conflict resolution modes (`fail`, `rename`, `override`) work the same as for a full App import:
+
+- **fail** — Returns `409 Conflict` if a resource with the same name exists in the App.
+- **rename** — You provide a new name; the resource is imported under that name.
+- **override** — The existing resource with the matching name is updated with the imported data.
+
+## Preview before importing
+
+The backend exposes a preview endpoint (`POST /internal/apps/preview-import`) that parses the export file and returns a structured inventory — component types, names, dependency graph, and warnings — without modifying the database. The import modal uses this to show you what will be created before you confirm.
+
+## File format
+
+Export files are JSON conforming to `AppExportFileSchema`. Individual resource exports have their own schemas (e.g., `AIServiceExportFileSchema`). All schemas include a `metadata` object with the export date, source App name, and schema version. Only `.json` files are accepted by the import file picker.
+
+## Related
+
+<Cards>
+  <Card title="Apps" href="/workspace/apps">
+    Manage the App lifecycle including the Export and Delete actions
+  </Card>
+  <Card title="AI Services" href="/workspace/ai-services">
+    Re-enter credentials after importing AI Services
+  </Card>
+  <Card title="Embedding Services" href="/workspace/embedding-services">
+    Re-enter credentials after importing Embedding Services
+  </Card>
+  <Card title="Silos and RAG" href="/knowledge-rag/silos-and-rag">
+    Understand what is and is not included in a Silo export
+  </Card>
+</Cards>

@@ -1,0 +1,124 @@
+---
+title: "Agent as Tool"
+description: "Compose multi-agent workflows by letting one agent call another as a tool."
+---
+
+Any agent can be designated as a **tool agent** — an agent that other agents can call as a callable sub-agent during their reasoning loop. This enables multi-agent composition: a coordinator agent delegates to specialist agents, each with their own system prompt, knowledge base (Silo), MCP servers, and skills.
+
+The calling agent decides when and how to invoke a tool agent, just like any other LangChain tool. The tool agent executes, returns its answer, and the calling agent incorporates that answer into its own response.
+
+## When to use agent-as-tool
+
+- A generalist coordinator needs to delegate tasks to specialists (e.g., a legal summary agent, a translation agent, a code review agent).
+- A workflow requires sequential or conditional delegation across multiple knowledge domains.
+- You want to reuse a well-tuned agent in multiple parent workflows without duplicating its configuration.
+
+<Callout type="info">
+  Tool agents support their own skills, Silo, and MCP connections. A failing MCP server for a sub-agent degrades that sub-agent but does not abort the parent agent's execution.
+</Callout>
+
+## Marking an agent as a tool
+
+<Steps>
+  <Step>
+    ### Open the agent to be used as a tool
+
+    Go to **Agents**, select the agent, and click **Edit**. Navigate to the **Configuration** tab.
+  </Step>
+
+  <Step>
+    ### Enable "Tool Agent"
+
+    Under **Capabilities**, check the **Tool Agent** checkbox. The label reads "Can be used by other agents."
+
+    <Callout type="warn">
+      If the agent is already referenced by one or more MCP servers, unchecking "Tool Agent" shows a warning listing those servers. The sub-agent will become unavailable in those servers if you proceed.
+    </Callout>
+  </Step>
+
+  <Step>
+    ### Save the agent
+
+    Click **Save Changes**. The agent is now available in the tool picker of other agents in the same App.
+  </Step>
+</Steps>
+
+## Connecting a tool agent to a parent agent
+
+<Steps>
+  <Step>
+    ### Open the parent agent's form
+
+    Go to **Agents**, select the parent agent, click **Edit**, then go to the **Advanced** tab.
+  </Step>
+
+  <Step>
+    ### Select tool agents
+
+    Under **Available Tools**, check the tool agents you want this agent to be able to call. Only agents with **Tool Agent** enabled appear in this list.
+  </Step>
+
+  <Step>
+    ### Save the parent agent
+
+    Click **Save Changes**. On the next invocation, the parent agent will have the selected sub-agents available as tools.
+  </Step>
+</Steps>
+
+## How it works at runtime
+
+When the parent agent is invoked, `agentTools.py` builds the tool list:
+
+1. For each entry in `agent.tool_associations`, an `IACTTool` (LangChain `BaseTool` subclass) is created.
+2. The `IACTTool` is initialized via `IACTTool.create(sub_agent)` — an async factory that:
+   - Loads the sub-agent's own tools (including nested tool agents, recursively).
+   - Loads the sub-agent's Silo retriever (if configured).
+   - Loads the sub-agent's MCP tools (if configured).
+   - Appends the sub-agent's skills section to its system prompt (if skills are assigned).
+   - Builds a LangGraph react agent for the sub-agent (no checkpointer — sub-agents are stateless within a call).
+3. The tool name is derived from `agent.name` (spaces replaced with `_`). The description is `agent.description`.
+4. The parent agent calls the tool with a query string; the sub-agent runs and returns its answer as a string.
+
+Tool composition is recursive: a tool agent can itself have tool agents attached.
+
+## Agent model fields relevant to tool use
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `is_tool` | `Boolean` | `false` | Marks this agent as usable as a tool by other agents. |
+| `tool_associations` | M:N | — | The set of tool agents this agent can call (`AgentTool` join table). |
+| `description` | `String(1000)` | — | Used as the LangChain tool description — tell the parent agent what this sub-agent does. |
+
+<Callout type="info">
+  The `description` field matters for tool routing. Write it as a one-sentence summary of the sub-agent's purpose: "Summarizes legal contracts and extracts key clauses." The parent agent uses this description to decide which tool to call.
+</Callout>
+
+## Example: coordinator + specialists
+
+**Setup:**
+
+| Agent | `is_tool` | System prompt summary |
+|-------|-----------|----------------------|
+| `Legal Analyst` | Yes | "Extract key clauses from contract text." |
+| `Translator` | Yes | "Translate text to the requested language." |
+| `Document Coordinator` | No | "You manage document analysis requests. Use available tools to delegate." |
+
+**Configuration for `Document Coordinator`:**
+- Advanced tab → Available Tools: `Legal_Analyst`, `Translator` both checked.
+
+**At runtime**, the coordinator receives: "Translate this French contract and summarize the penalty clauses." It calls `Translator` first, then `Legal_Analyst` on the translation, and combines both results in its final response.
+
+<Cards>
+  <Card title="Agents" href="/building-agents/agents">
+    Create and configure agents
+  </Card>
+  <Card title="Skills" href="/building-agents/skills">
+    Skills work in sub-agents too
+  </Card>
+  <Card title="Consuming MCP" href="/integrations/consuming-mcp">
+    Give sub-agents access to external tools via MCP
+  </Card>
+  <Card title="Playground" href="/building-agents/playground">
+    Test multi-agent workflows interactively
+  </Card>
+</Cards>

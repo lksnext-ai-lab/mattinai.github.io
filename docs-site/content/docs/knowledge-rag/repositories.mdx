@@ -1,0 +1,129 @@
+---
+title: "Repositories"
+description: "Upload documents to a Repository, vectorize them into the linked Silo, and manage files and folders."
+---
+
+A **Repository** is a collection of uploaded files linked to a Silo. Files you upload are automatically processed (text extraction, OCR for scanned pages, or transcription for audio), chunked, embedded, and stored in the Silo's vector database. Agents that have the Silo linked can then search over that content.
+
+When you create a Repository, a Silo is automatically created alongside it. You select the Embedding Service and vector database type during Repository creation; these settings belong to the Silo, not the Repository itself.
+
+## Prerequisites
+
+- An App to create the Repository in (see [Apps](/workspace/apps)).
+- At least one **Embedding Service** configured in the App (Settings → Embedding Services), used to vectorize uploaded files.
+
+## Create a Repository
+
+<Steps>
+  <Step>
+  ### Open Repositories
+  Inside your App, navigate to **App → Repositories**.
+  </Step>
+  <Step>
+  ### Click New Repository
+  Click **New Repository**. The repository form opens.
+  </Step>
+  <Step>
+  ### Enter a name
+  Give the Repository a descriptive name (e.g., `HR Policies 2024`).
+  </Step>
+  <Step>
+  ### Select a vector database and embedding service
+  Choose a **Vector Database** (PGVector or Qdrant) and an **Embedding Service**. These fields configure the Silo that is automatically created alongside the Repository — they are not stored on the Repository itself. The Silo's Embedding Service is what vectorizes uploads. The vector database type cannot be changed after creation.
+  </Step>
+  <Step>
+  ### Save
+  Click **Save**. The empty Repository is created together with its linked Silo, and you land on the repository detail view.
+  </Step>
+</Steps>
+
+## Upload Files
+
+<Steps>
+  <Step>
+  ### Open the Repository
+  Navigate to **App → Repositories** and click the repository name.
+  </Step>
+  <Step>
+  ### Upload files
+  Click **Upload** or drag and drop files onto the upload area. Multiple files can be uploaded at once.
+  </Step>
+  <Step>
+  ### Wait for processing
+  Each file is queued for processing. The status badge on each file changes from **Processing** to **Ready** when indexing is complete. Errors are reported per file.
+  </Step>
+  <Step>
+  ### Verify indexing
+  After files are ready, open the linked Silo's Playground and run a test query to confirm content is retrievable.
+  </Step>
+</Steps>
+
+<Callout type="warn">
+Files are subject to the App's **Maximum File Size** limit (set in App Settings → General). The default is `0` (no limit). Once a limit is set, uploads that exceed it are rejected with an error.
+</Callout>
+
+## Supported File Types
+
+| Type | Processing |
+|---|---|
+| PDF | Text extraction via `pypdf`. If no text layer is detected (`check_pdf_has_text`), pages are converted to images and OCR is applied via a vision model. |
+| DOCX | Direct text extraction via `python-docx` |
+| TXT, MD | Read directly |
+| Images (PNG, JPG) | OCR via a configured vision model |
+| Audio (MP3, WAV, M4A, WebM) | Transcription via OpenAI Whisper |
+
+## How Processing Works
+
+When a file is uploaded, the backend:
+
+1. Detects the file type by MIME type.
+2. Extracts text (PDF text layer, direct read, OCR, or transcription depending on type).
+3. Splits the text into overlapping chunks using a recursive character splitter (chunk size ≈ 500 characters, overlap ≈ 50 characters).
+4. Generates embeddings for each chunk using the linked Silo's Embedding Service.
+5. Stores the vectors in the Silo's vector database collection (`silo_{silo_id}`).
+6. Updates the file's status to `processed` (or `error` if a step fails).
+
+<Callout type="info">
+OCR and audio transcription involve LLM API calls and take longer than plain text extraction. Check the status badge; do not assume a file is indexed immediately after upload.
+</Callout>
+
+## Folders
+
+The repository detail view includes a **folder tree** on the left. You can create folders and organize uploaded files into them. Folder structure is for UI organization only — it does not affect how content is indexed or retrieved.
+
+## Manage Files
+
+From the repository detail view you can:
+
+- **Download** a file — click the download icon on the file row.
+- **Delete** a file — click the delete icon. Deleting a file removes it from storage and its vectors from the Silo's vector database.
+- **Move** a file to a different folder using the move action.
+
+<Callout type="info">
+When you update a document's content, delete the old file and re-upload the new version. Editing a file on disk does not re-trigger indexing; the old vectors remain until the file is deleted.
+</Callout>
+
+## Media Files
+
+The repository detail view has a separate **Media** tab for audio and video files that are processed via the transcription pipeline. Media items show a processing status and, once ready, their transcription is searchable in the Silo.
+
+## Search Within a Repository
+
+Click **Search** in the repository detail view to open the **Repository Playground** — a lightweight search interface that runs vector queries against only this repository's content. Useful for checking what a specific repository contributes to the Silo before linking an agent.
+
+## Related
+
+<Cards>
+  <Card title="Silos and RAG" href="/knowledge-rag/silos-and-rag">
+    Understand the Silo that this Repository feeds into
+  </Card>
+  <Card title="Agents" href="/building-agents/agents">
+    Link a Silo to an agent so it can search your documents
+  </Card>
+  <Card title="Playground" href="/building-agents/playground">
+    Test retrieval in the agent chat playground
+  </Card>
+  <Card title="Apps" href="/workspace/apps">
+    Configure file size limits and other App-level settings
+  </Card>
+</Cards>

@@ -1,0 +1,161 @@
+---
+title: "Agents"
+description: "Create and configure AI agents: system prompt, LLM selection, optional RAG silo, memory settings, and testing in the playground."
+---
+
+An **Agent** is an AI assistant you configure inside an App. You control its instructions (system prompt), the LLM it uses, whether it searches a knowledge base, how it manages conversation memory, and which tools it can call.
+
+## Prerequisites
+
+- An App to create the agent in (see [Apps](/workspace/apps)).
+- At least one **AI Service** configured in the App (Settings → AI Services) to power the agent's responses.
+
+## Create an Agent
+
+<Steps>
+  <Step>
+  ### Open Agents
+  Inside your App, click **AI Agents** in the dashboard or navigate to **App → Agents**.
+  </Step>
+  <Step>
+  ### Click New Agent
+  Click **New Agent**. The agent form opens.
+  </Step>
+  <Step>
+  ### Fill in the Basic tab
+  On the **Basic** tab, complete these fields:
+  - **Name** — a label for this agent (shown in the UI and API responses).
+  - **Description** — optional; shown in the UI and the Marketplace.
+  - **Type** — `agent` (standard) or `ocr_agent` (OCR Agent subtype, for scanned documents).
+
+  <Figure src="/images/agent-form.png" alt="Create Agent form Basic tab showing Name, Description, and Agent Type fields" caption="The Create Agent form on the Basic tab. The AI Service is configured on the Configuration tab — at least one AI Service must exist in the App before an agent can respond. If none exist, an amber prerequisite notice appears on the form." />
+  </Step>
+  <Step>
+  ### Write a system prompt
+  Switch to the **Prompts** tab. Enter the system prompt — the most important configuration field. It tells the agent its role, behavior constraints, and output expectations.
+  </Step>
+  <Step>
+  ### Choose the AI Service and model settings
+  On the **Configuration** tab, set:
+  - **AI Service** — select the LLM service that will power this agent (required).
+  - **Temperature** — controls response randomness. Default is `0.7`.
+  </Step>
+  <Step>
+  ### Optionally link a Silo for RAG
+  On the **Configuration** tab, set the **Knowledge Base (Silo)** field to an existing Silo. The agent will automatically search that Silo for relevant content when answering questions. Leave blank for a general-purpose agent without a knowledge base.
+  </Step>
+  <Step>
+  ### Configure memory (optional)
+  On the **Configuration** tab, Capabilities section, enable **Conversational**. Once enabled, Memory Management fields appear on the **Prompts** tab where you can adjust the memory parameters described below.
+  </Step>
+  <Step>
+  ### Save
+  Click **Create Agent**. The agent is created and appears in the Agents list. (When editing an existing agent, this button reads **Save Changes**.)
+  </Step>
+</Steps>
+
+## System Prompt
+
+The system prompt defines the agent's identity and behavior. Examples of what to include:
+
+- Role: `You are a customer support agent for Acme Corp.`
+- Behavioral constraints: `Be concise. Only answer questions about our products.`
+- Output format instructions: `Respond in bullet points.`
+
+<Callout type="info">
+Write the system prompt first, then test it in the Playground immediately. Iterate until the agent responds as expected before connecting it to a Silo or sharing it with others.
+</Callout>
+
+## LLM and AI Service
+
+The **AI Service** field on the Configuration tab determines which LLM the agent uses. Supported providers:
+
+| Provider | Example models |
+|---|---|
+| OpenAI | `gpt-4o`, `gpt-4-turbo` |
+| Anthropic | `claude-3-5-sonnet-20241022` |
+| Azure OpenAI | Deployment name + endpoint |
+| MistralAI | `mistral-large-latest` |
+| Google | `gemini-1.5-pro` |
+| Custom (OpenAI-compatible) | Any locally hosted model |
+
+AI Services are configured once at the App level (Settings → AI Services) and then selected per agent. System-level AI Services configured by a platform administrator are also available.
+
+## Temperature
+
+| Range | Effect |
+|---|---|
+| `0.0 – 0.3` | Consistent, factual, deterministic |
+| `0.4 – 0.7` | Balanced (default: `0.7`) |
+| `0.8 – 1.0` | Creative, varied, less predictable |
+
+Use low temperature for data extraction, factual Q&A, and support bots. Use higher temperature for brainstorming or creative writing.
+
+## Linking a Silo (RAG)
+
+When a Silo is linked, every user message triggers a semantic search of the Silo before the LLM is called. Relevant document chunks are injected into the agent's context automatically.
+
+<Steps>
+  <Step>
+  ### Create the Silo first
+  Follow the [Silos and RAG](/knowledge-rag/silos-and-rag) guide to create and populate a Silo with your documents.
+  </Step>
+  <Step>
+  ### Select the Silo on the agent form
+  On the agent form's **Configuration** tab, choose the Silo from the **Knowledge Base (Silo)** dropdown.
+  </Step>
+  <Step>
+  ### Save and test
+  Save the agent and open the Playground. Ask questions about the content in the Silo to verify retrieval is working.
+  </Step>
+</Steps>
+
+## Memory Settings
+
+Memory state is persisted per conversation thread using LangGraph's PostgreSQL checkpointer. The following fields control how memory is managed:
+
+| Field | Default | Description |
+|---|---|---|
+| `has_memory` | — | Toggle (labeled **Conversational**) in the Configuration tab Capabilities section. When off, each call is stateless. |
+| `memory_max_messages` | `20` | Number of messages to retain after a summarization pass (`SummarizationMiddleware keep=("messages", N)`). Appears on the **Prompts** tab when memory is enabled. |
+| `memory_max_tokens` | `4000` | Token count that triggers automatic summarization of older messages (`SummarizationMiddleware trigger=("tokens", N)`). Appears on the **Prompts** tab when memory is enabled. |
+| `memory_summarize_threshold` | `20` | Maximum tokens sent to the summarizer LLM during a summarization pass (`trim_tokens_to_summarize`). Appears on the **Prompts** tab when memory is enabled. |
+
+<Callout type="info">
+Memory is per conversation session. Different conversations with the same agent do not share memory. Click **New Conversation** in the Playground to start a fresh session while preserving the old one in history.
+</Callout>
+
+## Agent Types
+
+**Standard agent (`type = agent`)** — The default type. Processes text, PDFs, images, and audio.
+
+**OCR Agent (`type = ocr_agent`)** — A subtype for scanned document processing. Configured with two LLMs: a vision model (for reading scanned pages) and a text model (for structuring the output). Select **OCR Agent** in the Type field when creating the agent.
+
+## Agent as Tool
+
+Enable **Use as Tool** (`is_tool = true`) to allow other agents to call this agent as a sub-agent. This enables multi-agent workflows where a coordinator delegates to specialist agents.
+
+## Testing in the Playground
+
+After saving, click **Open Playground** (or the chat icon on the agent row) to open the interactive chat interface. See [Playground](/building-agents/playground) for full details on what you can do there.
+
+<Callout type="info">
+In client white-label deployments, some agent configuration tabs may be hidden or renamed via `clientConfig.ts`. The underlying agent model and behavior remain identical.
+</Callout>
+
+## Related
+
+<Cards>
+  <Card title="Silos and RAG" href="/knowledge-rag/silos-and-rag">
+    Build the knowledge base your agent will search
+  </Card>
+  <Card title="Playground" href="/building-agents/playground">
+    Test your agent with real conversations
+  </Card>
+  <Card title="Apps" href="/workspace/apps">
+    Manage the App workspace that contains your agents
+  </Card>
+  <Card title="API Keys" href="/workspace/api-keys">
+    Call your agents from external applications
+  </Card>
+</Cards>

@@ -1,0 +1,118 @@
+---
+title: "Collaboration & Roles"
+description: "Invite collaborators to an App, assign roles, and manage team access."
+---
+
+**Collaboration** lets multiple users work inside the same App. Each collaborator is assigned a role that controls what they can view and change. Access the collaboration settings at `Settings → Collaboration` inside any App.
+
+<Figure src="/images/ws-collaboration.png" alt="Collaboration settings page in Mattin AI" caption="The Collaboration page (Settings → Collaboration) shows the Team Members table with each user's role and invitation status, and the form for sending new invitations." />
+
+## Role hierarchy
+
+Roles are ordered from lowest to highest. Higher roles inherit all permissions from lower ones.
+
+| Role | Key permissions |
+|---|---|
+| **Viewer** | View agents, conversations, and all resources. Execute agents (chat). Cannot create or edit resources. |
+| **Editor** | Create and update agents, silos, repositories, domains, and other resources. Cannot manage collaborators or change App settings. |
+| **Administrator** | All Editor permissions. Manage AI Services, Embedding Services, MCP configs, and API keys. Cannot invite/remove collaborators or change App general settings. |
+| **Owner** | Full control. Edit App settings, invite/remove collaborators, change collaborator roles, transfer ownership, and delete the App. Cannot be removed by another member. |
+
+<Callout type="info">
+**OMNIADMIN** is a platform-level role set via the `AICT_OMNIADMINS` environment variable. It is not an App role — it grants system-wide access to every App regardless of membership. See [Core Concepts](/getting-started/core-concepts) for the full role hierarchy.
+</Callout>
+
+A user's App role is also bounded by their **platform role**. A user with the `viewer` platform role cannot hold an App role above Viewer. If you try to invite such a user with a higher role, the invitation is rejected with a validation error. In the collaborators table, a warning badge appears next to any collaborator whose platform role is `viewer` but whose App role differs — the role change dropdown is disabled for those users.
+
+## Invite a collaborator
+
+Only the **App Owner** can invite new collaborators.
+
+<Steps>
+  <Step>
+  ### Open Collaboration settings
+  Inside your App, navigate to **Settings → Collaboration**. If you are not the App Owner, the Invite section is replaced by a notice that only the Owner can invite users.
+  </Step>
+  <Step>
+  ### Enter the email address
+  In the **Invite Collaborator** section, type the email address of the user you want to invite.
+  </Step>
+  <Step>
+  ### Select a role
+  Choose **Viewer**, **Editor**, or **Administrator** from the role selector. You cannot invite someone as Owner — the Owner role is held by the user who created the App.
+  </Step>
+  <Step>
+  ### Click Invite
+  Click **Invite**. The invitation is created with status **Pending**. The invited user receives a notification and can accept or decline.
+  </Step>
+  <Step>
+  ### Invitation accepted
+  Once the user accepts, their status changes to **Active** (shown as an "Accepted" badge in the Team Members table). Until then, the row shows **Pending**.
+  </Step>
+</Steps>
+
+<Callout type="info">
+Pending invitations are visible in the Team Members table. Users can also see and respond to their own pending invitations from the platform-level invitations panel.
+</Callout>
+
+## Team Members table
+
+The **Team Members** table lists the App Owner and all collaborators. Columns include user name, email, role badge, status badge, and the date and inviter.
+
+| Status badge | Meaning |
+|---|---|
+| **Active** (green) | Owner, or collaborator who has accepted the invitation. |
+| **Pending** (yellow) | Invitation sent but not yet accepted. |
+| **Declined** (red) | Invitation was declined by the user. |
+
+Role badges:
+- Owner — purple
+- Administrator — indigo
+- Editor — blue
+- Viewer — yellow
+
+## Change a collaborator's role
+
+Only the **App Owner** can change the role of an **accepted** collaborator using the role dropdown in the Actions column. The dropdown is disabled for:
+
+- The App Owner (cannot be demoted via this form).
+- Users whose platform role is `viewer` (they cannot be promoted above Viewer).
+
+Changes take effect immediately.
+
+## Remove a collaborator
+
+Click **Remove** next to a collaborator. A confirmation dialog shows the user's name and warns that they will lose access immediately. Confirming sends `DELETE /internal/apps/{app_id}/collaboration/{user_id}`. The removal is instant — any in-flight sessions the user has are terminated.
+
+<Callout type="warn">
+Removing a collaborator is immediate and irreversible from this panel. To restore access, invite the user again.
+</Callout>
+
+## Leave an App
+
+Non-owner collaborators can leave an App from the My Apps list using the **Leave** option in the Actions menu. Owners cannot leave their own App; they must transfer ownership or delete it.
+
+## Collaboration rules summary
+
+- Only the **App Owner** can invite collaborators, change their roles, or remove them.
+- Only the **Owner** has full control (delete App, manage all collaborators, edit App settings).
+- Administrators can manage AI Services, Embedding Services, MCP configs, and API keys, but cannot invite/remove collaborators or edit App general settings.
+- Platform `viewer` users can only hold the `viewer` App role — the role selector enforces this.
+- The Owner row in the Team Members table has no Actions — the Owner cannot be removed or have their role changed via this panel.
+
+## Related
+
+<Cards>
+  <Card title="Core Concepts" href="/getting-started/core-concepts">
+    Full role hierarchy including platform roles and OMNIADMIN
+  </Card>
+  <Card title="Apps" href="/workspace/apps">
+    Create Apps and understand the App lifecycle
+  </Card>
+  <Card title="App Settings" href="/workspace/app-settings">
+    General settings that only the App Owner can save
+  </Card>
+  <Card title="API Keys" href="/workspace/api-keys">
+    Generate App-scoped keys — requires Administrator role
+  </Card>
+</Cards>

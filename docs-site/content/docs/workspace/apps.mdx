@@ -1,0 +1,155 @@
+---
+title: "Apps"
+description: "Create and manage Apps (workspaces): roles, collaborators, settings, and deletion."
+---
+
+An **App** is the top-level workspace in Mattin AI. Every resource you create — agents, silos, repositories, AI services, API keys — lives inside an App. You can have multiple Apps for different teams, projects, or environments.
+
+## Prerequisites
+
+- An account on the Mattin AI platform.
+- The **Editor** platform role or higher. Platform **Viewers** cannot create or import Apps — the New App button is hidden and the App creation route is protected.
+
+## Create an App
+
+<Figure src="/images/apps-list.png" alt="Mattin AI My Apps list with one app in the table" caption="The My Apps list shows every App you own or collaborate on, with your role and quick-action controls." />
+
+<Steps>
+  <Step>
+  ### Open the Apps list
+  Navigate to the home screen. You will see the **My Apps** table listing all Apps you own or collaborate on.
+  </Step>
+  <Step>
+  ### Click New App
+  Click the **New App** button in the top-right corner. A modal dialog opens.
+  </Step>
+  <Step>
+  ### Enter a name
+  Type a descriptive name for the App. Names are shown in the navigation, API responses, and LangSmith tracing (when configured). Click **Create**.
+
+  <Figure src="/images/app-create-modal.png" alt="Create New App modal with App Name field filled in" caption="The Create New App modal. App names appear in navigation, API responses, and LangSmith project labels." />
+  </Step>
+  <Step>
+  ### Open the dashboard
+  The App appears in the list. Click its name or **Open Dashboard** in the Actions menu to enter the App.
+  </Step>
+</Steps>
+
+## The App Dashboard
+
+<Figure src="/images/app-dashboard.png" alt="App dashboard showing feature cards for Agents, Repositories, Silos, Domains, and App Settings" caption="The App dashboard. Feature cards show resource counts; the Getting Started checklist tracks onboarding progress." />
+
+After opening an App, the dashboard shows:
+
+- **Hero banner** — App name, collaborator count, and LangSmith status badge.
+- **Feature cards** — Quick links to Agents, Repositories, Silos, Domains, and App Settings, each showing a resource count.
+- **Rate Limit Usage** — A live speedometer showing current requests-per-minute consumption against the configured limit (0 = unlimited).
+- **Top Agents by Usage** — A leaderboard of the five most-used agents by request count.
+- **Getting Started checklist** — An onboarding checklist (create an agent, upload documents, create a silo, add a domain, invite a collaborator) that tracks completion and can be dismissed once all five steps are done.
+
+## App Settings
+
+Go to **App → Settings → General** to configure:
+
+| Field | Description |
+|---|---|
+| **App Name** | Display name used in navigation and API responses |
+| **App Slug** | Lowercase URL-friendly identifier (`[a-z0-9-]`). Used in MCP server URLs (e.g., `/mcp/v1/my-app/my-server`). Saved separately with its own **Update Slug** button. |
+| **LangSmith API Key** | Per-App key for LangSmith tracing. Falls back to the global `LANGSMITH_API_KEY` env var when `LANGSMITH_TRACING=true`. Use **Test connection** to verify before saving. |
+| **Agent Rate Limit** | Maximum agent calls per minute for this App. Set to `0` for unlimited. |
+| **Maximum File Size (MB)** | Upload size cap for repository files. Set to `0` for no limit. |
+| **Agent CORS Origins** | Comma-separated list of origins allowed to call the public agent endpoints (e.g., `https://your-site.example.com`). |
+| **Enable OpenAI-compatible API** | Exposes agents via OpenAI-compatible chat-completion endpoints for use with tools that expect the OpenAI API format. |
+
+<Callout type="warn">
+Only the App **Owner** can save General Settings changes. Administrators, Editors, and Viewers see the form in read-only mode.
+</Callout>
+
+## Roles
+
+Every member of an App has a role that controls what they can do:
+
+| Role | Capabilities |
+|---|---|
+| **Viewer** | View agents and conversations; cannot create or edit resources |
+| **Editor** | Create and edit agents, silos, repositories, and other resources |
+| **Administrator** | Manage AI Services, Embedding Services, MCP configs, and API keys plus all Editor capabilities |
+| **Owner** | Full control, including editing App settings, inviting/removing collaborators, and deleting the App |
+| **Omniadmin** | Platform-wide admin; can access all Apps and system settings |
+
+<Callout type="info">
+A user's App role is bounded by their platform role. A platform **Viewer** cannot be promoted above **Viewer** in any App — the role selector disables that option and a warning badge appears next to their name in the collaborators table.
+</Callout>
+
+## Collaborators
+
+<Steps>
+  <Step>
+  ### Open Collaboration settings
+  In your App, go to **Settings → Collaboration**.
+  </Step>
+  <Step>
+  ### Invite a user
+  In the **Invite Collaborator** section, enter the user's email address and select a role (Viewer, Editor, or Administrator). Click **Invite**.
+  </Step>
+  <Step>
+  ### Invitation accepted
+  The invited user receives a notification. Their status shows **Pending** until they accept, then changes to **Active**.
+  </Step>
+  <Step>
+  ### Manage existing members
+  The **Team Members** table lists everyone including the Owner. Only the Owner can change an accepted collaborator's role using the role dropdown, or click **Remove** to revoke access immediately.
+  </Step>
+</Steps>
+
+<Callout type="info">
+Only the **App Owner** can invite collaborators, change their roles, or remove them. Editors and Administrators can view the list but cannot make changes to membership.
+</Callout>
+
+## Delete an App
+
+Only the **Owner** can delete an App.
+
+<Steps>
+  <Step>
+  ### Open the Actions menu
+  On the **My Apps** list, open the Actions dropdown for the App and click **Delete App**.
+  </Step>
+  <Step>
+  ### Type the App name to confirm
+  A browser prompt asks you to type the exact App name to confirm. If the text you enter does not match the App name, deletion is cancelled.
+  </Step>
+  <Step>
+  ### Permanent deletion
+  Once confirmed, the App and all its resources are permanently removed — agents, silos, repositories, domains, API keys, and collaborations. This cannot be undone.
+  </Step>
+</Steps>
+
+<Callout type="warn">
+Deleting an App is irreversible. Export the App first if you may need its configuration later (Actions → **Export Full App**).
+</Callout>
+
+## Export and Import
+
+Use **Actions → Export Full App** to download a JSON snapshot of the App configuration. Use **Import App** (top of the Apps list) to restore it or copy it to another instance.
+
+<Callout type="info">
+In client white-label deployments, the App name, slug, and branding strings may be customized via `clientConfig.ts`. The underlying data model and role behavior remain identical.
+</Callout>
+
+## Related
+
+<Cards>
+  <Card title="Agents" href="/building-agents/agents">
+    Create and configure AI agents inside an App
+  </Card>
+  <Card title="Silos and RAG" href="/knowledge-rag/silos-and-rag">
+    Build knowledge bases scoped to an App
+  </Card>
+  <Card title="API Keys" href="/workspace/api-keys">
+    Generate App-scoped keys for the public API
+  </Card>
+  <Card title="Repositories" href="/knowledge-rag/repositories">
+    Upload and vectorize documents in an App
+  </Card>
+</Cards>

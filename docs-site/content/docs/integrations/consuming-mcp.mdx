@@ -1,0 +1,219 @@
+---
+title: "Consuming External MCP Servers"
+description: "Connect your Mattin AI agents to external MCP servers so they can call tools from GitHub, Playwright, databases, and any other MCP-compatible service."
+---
+
+This page covers the **inbound direction**: Mattin AI agents acting as MCP clients, consuming tools that external MCP servers expose. If you want to go the other way — exposing your own agents as tools for clients like Claude Desktop — see [Exposing Agents as MCP](/integrations/exposing-mcp).
+
+## What is an MCP Config?
+
+An **MCP Config** is a workspace-level record that stores the connection settings for one external MCP server. Once saved, it appears as a selectable option inside the agent form, where you can attach it to as many agents as you need.
+
+<Figure src="/images/int-mcp-configs.png" alt="MCP Configs settings page in Mattin AI" caption="The MCP Configs settings page lists all external MCP server connections defined in an App. Each config can be attached to one or more agents from their Advanced tab." />
+
+At runtime, when an agent that has an MCP Config attached receives a user message, Mattin AI:
+
+1. Opens a connection to the external MCP server using the stored config.
+2. Retrieves the list of tools the server exposes.
+3. Makes those tools available to the LLM alongside any other tools (RAG retriever, agent-as-tool, etc.).
+4. The LLM decides whether and when to call them, and the results flow back into the conversation.
+
+Multiple MCP Configs can be attached to a single agent, giving it access to tools from several servers at the same time.
+
+<Callout type="info">
+MCP Configs are scoped to an App. An agent in one App cannot use configs created in a different App.
+</Callout>
+
+## Prerequisites
+
+- An App where you have the **Administrator** role or higher (see [Apps](/workspace/apps)).
+- At least one agent already created in the App (see [Agents](/building-agents/agents)).
+- The external MCP server is accessible from the Mattin AI backend host (network reachable for SSE/HTTP servers; installed locally for stdio servers).
+
+## Create an MCP Config
+
+<Steps>
+  <Step>
+  ### Open MCP Configs
+  Inside your App, navigate to **Settings → MCP Configs**.
+  </Step>
+  <Step>
+  ### Click Add MCP Config
+  Click **Add MCP Config**. A modal form opens.
+  </Step>
+  <Step>
+  ### Fill in the name and description
+  - **Configuration Name** (required) — a label for this config, e.g. `Playwright MCP` or `GitHub Tools`.
+  - **Description** (optional) — a note for your team about what this server provides.
+  </Step>
+  <Step>
+  ### Enter the MCP Server Configuration JSON
+  The **MCP Server Configuration** field accepts a JSON object. The format mirrors a standard `mcp.json` file.
+
+  For a **stdio** server (local process, started by the backend):
+
+  ```json
+  {
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest", "--isolated"]
+    }
+  }
+  ```
+
+  For an **SSE/HTTP** server (remote, always running):
+
+  ```json
+  {
+    "my-remote-server": {
+      "url": "https://mcp.your-instance.example.com/sse",
+      "transport": "sse",
+      "headers": {
+        "Authorization": "Bearer your-api-key"
+      }
+    }
+  }
+  ```
+
+  The top-level key (`"playwright"`, `"my-remote-server"`) is the server name used internally. You can include more than one server entry in the same JSON object if a single config record should provide tools from several endpoints simultaneously.
+  </Step>
+  <Step>
+  ### Set SSL verification
+  The **Verify SSL Certificates** toggle is on by default. Disable it only if the MCP server uses a self-signed certificate in a controlled environment.
+  </Step>
+  <Step>
+  ### Test the connection
+  Click **Test Connection** to verify Mattin AI can reach the server. A successful test shows a list of the tools the server exposes. If the test fails, check the URL, command, and any required authentication headers before saving.
+  </Step>
+  <Step>
+  ### Save the config
+  Click **Create Config**. The config appears in the MCP Configs list.
+  </Step>
+</Steps>
+
+## MCP Config fields reference
+
+| Field | Required | Description |
+|---|---|---|
+| **Configuration Name** | Yes | Display label. Max 100 characters. |
+| **Description** | No | Free text note. Max 1000 characters. |
+| **MCP Server Configuration (JSON)** | Yes | JSON object with one or more MCP server entries. |
+| **Verify SSL Certificates** | — | Toggle. Default: on. Disable for self-signed certificates. |
+
+### Config JSON: stdio transport
+
+```json
+{
+  "<server-name>": {
+    "command": "npx",
+    "args": ["<package-name>@latest", "<flag>"]
+  }
+}
+```
+
+| Key | Description |
+|---|---|
+| `command` | The executable to run (e.g. `npx`, `python`, `node`). |
+| `args` | Array of arguments passed to the command. |
+| `env` | Optional object of environment variables for the process. Useful for secrets. |
+
+### Config JSON: SSE/HTTP transport
+
+```json
+{
+  "<server-name>": {
+    "url": "https://mcp.your-instance.example.com/sse",
+    "transport": "sse",
+    "headers": {
+      "Authorization": "Bearer your-api-key"
+    }
+  }
+}
+```
+
+| Key | Description |
+|---|---|
+| `url` | Full URL to the MCP server endpoint. |
+| `transport` | Set to `"sse"` for Server-Sent Events transport. |
+| `headers` | Optional object of HTTP headers (use for authentication). |
+
+<Callout type="warn">
+MCP Configs are exported without authentication tokens for security. If you export a config and import it into another App or instance, you must re-enter any `Authorization` headers or environment variables that contain secrets.
+</Callout>
+
+## Attach an MCP Config to an agent
+
+Creating the MCP Config does not automatically activate it — you must attach it to specific agents.
+
+<Steps>
+  <Step>
+  ### Open the agent form
+  Go to **Agents**, then click the agent's name to open the agent form.
+  </Step>
+  <Step>
+  ### Open the Advanced tab
+  Click the **Advanced** tab in the agent form. The **MCP Servers** section appears, listing all MCP Configs available in the App.
+  </Step>
+  <Step>
+  ### Select the configs to attach
+  Check the box next to each MCP Config you want this agent to use. A count of selected configs appears below the list.
+  </Step>
+  <Step>
+  ### Save the agent
+  Click **Save Changes**. The agent will now call those MCP server tools during conversations.
+  </Step>
+</Steps>
+
+<Callout type="info">
+The MCP Configs section on the Advanced tab is only visible for standard agents — OCR agents cannot use MCP tools.
+</Callout>
+
+## How the agent uses MCP tools at runtime
+
+When a user sends a message to an agent with MCP Configs attached, the execution flow is:
+
+1. Mattin AI builds the agent chain, including the MCP client for each attached config.
+2. The LLM receives the tool definitions from all attached MCP servers alongside its system prompt and the user message.
+3. The LLM decides whether to call a tool. If it does, Mattin AI forwards the call to the appropriate MCP server and returns the result to the LLM.
+4. The LLM incorporates the tool result and generates the final response.
+
+The agent's system prompt should describe what tools are available and when to use them, just as it would for any other capability.
+
+## Export and import
+
+MCP Configs can be exported as JSON files from the **Actions** menu on the MCP Configs list. This is useful for sharing configs across Apps or for backup.
+
+On export, authentication credentials (header values, environment variable values) are stripped. Re-enter them after importing.
+
+Import from **Settings → MCP Configs → Import**. If a config with the same name already exists, choose a conflict mode:
+
+| Mode | Behavior |
+|---|---|
+| **Fail** | Import is rejected if a name collision exists (default). |
+| **Replace** | The existing config is overwritten. |
+| **New Name** | Import proceeds under a different name you supply. |
+
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| Test connection fails immediately | Wrong URL or command | Double-check the `url` or `command` + `args` in the JSON. |
+| `401` or `403` from test | Missing or invalid credentials | Add `Authorization` header or check `env` variables. |
+| Tools not available in conversation | Config not attached to the agent | Open the agent's **Advanced** tab and enable the config. |
+| SSL error on connection | Self-signed certificate | Disable **Verify SSL Certificates** toggle. |
+| stdio server not found | Package not installed | Ensure `npx`, `node`, or the required runtime is available on the backend host. |
+
+<Cards>
+  <Card title="Exposing Agents as MCP" href="/integrations/exposing-mcp">
+    The opposite direction — expose your agents as tools for external clients
+  </Card>
+  <Card title="Agents" href="/building-agents/agents">
+    Create and configure the agents that consume these MCP tools
+  </Card>
+  <Card title="API Keys" href="/workspace/api-keys">
+    App-scoped keys used for the public API and MCP endpoints
+  </Card>
+  <Card title="Apps" href="/workspace/apps">
+    The workspace that scopes MCP Configs and agents
+  </Card>
+</Cards>

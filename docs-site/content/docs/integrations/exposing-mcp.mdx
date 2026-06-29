@@ -1,0 +1,227 @@
+---
+title: "Exposing Agents as MCP Tools"
+description: "Create an MCP Server in Mattin AI to expose your agents as callable tools for external clients like Claude Desktop and Cursor."
+---
+
+This page covers the **outbound direction**: Mattin AI acting as an MCP server, so external clients can discover and call your agents as tools. If you want the opposite — having your agents consume tools from external MCP servers — see [Consuming External MCP Servers](/integrations/consuming-mcp).
+
+## What is an MCP Server?
+
+An **MCP Server** in Mattin AI is a named endpoint that exposes a set of your agents as MCP tools. When an external client (Claude Desktop, Cursor, or any MCP-compatible application) connects to the endpoint, it sees each exposed agent as a callable tool and can invoke it during a conversation.
+
+<Figure src="/images/int-mcp-servers.png" alt="MCP Servers page in Mattin AI" caption="The MCP Servers page lists all outbound MCP server endpoints defined in an App. Each server has a slug-based URL and exposes a selected set of tool-flagged agents to external clients." />
+
+Each MCP Server is:
+
+- Identified by a **slug** that forms the endpoint URL.
+- Scoped to an **App** — it can only expose agents from that same App.
+- Protected by **API key authentication** — callers must include a valid App API key in the `X-API-KEY` header.
+- Independent from other MCP Servers in the same App (you can have several, exposing different subsets of agents).
+
+<Callout type="info">
+Only agents with **Use as Tool** (`is_tool = true`) enabled appear in the agent selection list when creating or editing an MCP Server. Enable that flag on the agent form before setting up the server.
+</Callout>
+
+## Prerequisites
+
+- An App with at least the **Administrator** role (see [Apps](/workspace/apps)).
+- One or more agents with **Use as Tool** enabled (see [Agents](/building-agents/agents) and [Agent as Tool](/building-agents/agent-as-tool)).
+- An **API key** for the App (see [API Keys](/workspace/api-keys)) — you will need it to configure the external client.
+
+## Set the App slug
+
+The endpoint URL uses the App's slug: `/mcp/v1/{app-slug}/{server-slug}`. If no slug is set, the endpoint falls back to the ID-based form `/mcp/v1/id/{app-id}/{server-id}`. Slug-based URLs are easier to configure in external clients and survive server restarts.
+
+<Steps>
+  <Step>
+  ### Open MCP Servers settings
+  Inside your App, navigate to **MCP Servers** in the main menu.
+  </Step>
+  <Step>
+  ### Find the App URL Slug setting
+  The page header area contains an **App URL Slug** section. Enter a short, lowercase, hyphen-separated identifier for your App (e.g. `my-app`). Only lowercase letters, numbers, and hyphens are accepted.
+  </Step>
+  <Step>
+  ### Save the slug
+  Click **Update Slug**. The new slug takes effect immediately for all MCP Servers in the App.
+  </Step>
+</Steps>
+
+## Create an MCP Server
+
+<Steps>
+  <Step>
+  ### Click Create MCP Server
+  From the **MCP Servers** page, click **Create MCP Server**.
+  </Step>
+  <Step>
+  ### Fill in basic information
+  On the form, provide:
+  - **Name** (required) — a descriptive label, e.g. `Support Tools` or `Research Server`.
+  - **URL Slug** (optional) — the server's path segment in the endpoint URL. Auto-generated from the name if left blank. Use lowercase letters, numbers, and hyphens only.
+  - **Description** (optional) — a note visible in the UI.
+  - **Active** — leave checked so the server accepts requests. You can deactivate it later to suspend access without deleting the record.
+  - **Rate Limit** — maximum requests per minute from all callers combined. Set to `0` for unlimited.
+  </Step>
+  <Step>
+  ### Select agents to expose
+  The **Select Agents to Expose** section lists every agent in the App that has `is_tool = true`. Check the agents you want this server to make available as tools. You can select any number.
+
+  If the list is empty, no agents have **Use as Tool** enabled. Go to **Agents**, open the agent form, and enable **Tool Agent** on the **Configuration** tab (under Capabilities).
+  </Step>
+  <Step>
+  ### Save
+  Click **Create MCP Server**. You are taken back to the MCP Servers list.
+  </Step>
+</Steps>
+
+## MCP Server fields reference
+
+| Field | Required | Description |
+|---|---|---|
+| **Name** | Yes | Display label. Max 100 characters. |
+| **URL Slug** | No | Path segment for the endpoint. Auto-generated if empty. Unique within the App. |
+| **Description** | No | Free text. Max 1000 characters. |
+| **Active** | — | Toggle. Default: on. Inactive servers reject all requests with `403`. |
+| **Rate Limit** | — | Integer, requests per minute. `0` = unlimited. |
+| **Agents** | No | Agents (tool-flagged) exposed as tools. Can be empty but the server will return no tools. |
+
+## Endpoint URLs
+
+Once created, the MCP Server detail page shows two endpoint URLs.
+
+| Endpoint | Format | Notes |
+|---|---|---|
+| **Primary (slug-based)** | `/mcp/v1/{app-slug}/{server-slug}` | Preferred. Requires the App slug to be set. |
+| **Fallback (ID-based)** | `/mcp/v1/id/{app-id}/{server-id}` | Always available. Use if no slug is set. |
+
+Both endpoints accept `POST` requests with a JSON-RPC 2.0 body (the standard MCP wire format).
+
+## Authentication
+
+Every request to an MCP endpoint must include an active API key from the App. Pass it in the `X-API-KEY` header:
+
+```http
+POST /mcp/v1/my-app/my-server
+X-API-KEY: your-api-key
+Content-Type: application/json
+
+{"jsonrpc": "2.0", "method": "tools/list", "id": 1}
+```
+
+Alternatively, the same key can be passed as a Bearer token:
+
+```http
+Authorization: Bearer your-api-key
+```
+
+A request that omits both headers receives `401 Unauthorized`. A request that uses a key from a different App receives `401`. A request to an inactive server receives `403 Forbidden`.
+
+<Callout type="warn">
+API keys are shown only once at creation. Store the key in a secure location before closing the creation dialog. If lost, delete the key and create a new one. See [API Keys](/workspace/api-keys).
+</Callout>
+
+## Connect from external clients
+
+The MCP Server detail page provides ready-to-use configuration snippets for Claude Desktop, Cursor, and a curl test example. You can copy them directly from the **Connection Configuration** section.
+
+<Tabs items={["Claude Desktop", "Cursor", "curl"]}>
+  <Tab value="Claude Desktop">
+  Add the following to your `claude_desktop_config.json` file. Replace the placeholder values with your actual instance URL and API key.
+
+  ```json
+  {
+    "mcpServers": {
+      "my-server": {
+        "url": "https://your-instance.example.com/mcp/v1/my-app/my-server",
+        "headers": {
+          "X-API-KEY": "your-api-key"
+        }
+      }
+    }
+  }
+  ```
+
+  The config file is typically at:
+  - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+  - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+  </Tab>
+  <Tab value="Cursor">
+  Add the same block to your Cursor MCP settings (Settings → MCP):
+
+  ```json
+  {
+    "mcpServers": {
+      "my-server": {
+        "url": "https://your-instance.example.com/mcp/v1/my-app/my-server",
+        "headers": {
+          "X-API-KEY": "your-api-key"
+        }
+      }
+    }
+  }
+  ```
+  </Tab>
+  <Tab value="curl">
+  Test the `tools/list` method to verify connectivity before configuring a client:
+
+  ```bash
+  curl -X POST "https://your-instance.example.com/mcp/v1/my-app/my-server" \
+    -H "X-API-KEY: your-api-key" \
+    -H "Content-Type: application/json" \
+    -d '{"jsonrpc": "2.0", "method": "tools/list", "id": 1}'
+  ```
+
+  A successful response returns a JSON-RPC 2.0 result containing the tool definitions for each exposed agent.
+  </Tab>
+</Tabs>
+
+## How agents appear as tools
+
+Each agent attached to the MCP Server is presented to the external client as a single tool. The tool name defaults to the agent's name (lowercased, spaces replaced with underscores). The tool description defaults to the agent's description field.
+
+When the MCP Server was configured, the `MCPServerAgent` association record may optionally store:
+
+| Field | Description |
+|---|---|
+| `tool_name_override` | Custom tool name. Used instead of the agent name if set. |
+| `tool_description_override` | Custom tool description. Used instead of the agent description if set. |
+
+Agents that are no longer marked as tools (`is_tool = false`) or have been deleted are flagged as **Unavailable** on the MCP Server detail page. They appear in the list with an "Unavailable" badge and are excluded from the tools returned to clients until the issue is resolved.
+
+## Manage an MCP Server
+
+From the MCP Servers list, click the server name or **View Details** to open the detail page. From there you can:
+
+| Action | How | Role required |
+|---|---|---|
+| View endpoint URLs and connection hints | Always visible on the detail page | Viewer |
+| Edit name, slug, description, agents | Click **Edit** | Administrator |
+| Deactivate / reactivate | Edit the server and toggle **Active** | Administrator |
+| Delete | Click **Delete** on the detail page | Administrator |
+
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| `401 Unauthorized` | Missing or wrong API key | Pass a valid active App API key in `X-API-KEY`. |
+| `403 Forbidden` | Server is inactive | Enable **Active** on the server form. |
+| `404 Not Found` on slug URL | App slug not set or wrong | Set the App slug under **Settings → MCP Servers → App URL Slug**. |
+| Empty `tools/list` result | No agents attached, or all are unavailable | Open the server form and attach tool-flagged agents. |
+| Agent shows "Unavailable" | Agent deleted or `is_tool` disabled | Re-enable **Use as Tool** on the agent or remove it from the server. |
+| Rate limit errors (`429`) | Too many requests | Increase the **Rate Limit** setting on the server, or throttle the client. |
+
+<Cards>
+  <Card title="Consuming External MCP Servers" href="/integrations/consuming-mcp">
+    The opposite direction — attach external MCP tools to your agents
+  </Card>
+  <Card title="Agent as Tool" href="/building-agents/agent-as-tool">
+    Enable Use as Tool on an agent so it can be exposed via MCP
+  </Card>
+  <Card title="API Keys" href="/workspace/api-keys">
+    Create the App API key that external clients use to authenticate
+  </Card>
+  <Card title="Apps" href="/workspace/apps">
+    Set the App slug that appears in MCP endpoint URLs
+  </Card>
+</Cards>

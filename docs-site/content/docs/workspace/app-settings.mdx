@@ -1,0 +1,120 @@
+---
+title: "App Settings"
+description: "Configure an App's name, slug, LangSmith tracing, rate limits, file size cap, CORS origins, and the OpenAI-compatible API."
+---
+
+**App Settings** is the General Settings section inside an App (`Settings → General`). It controls the App's identity, integrations, and runtime limits. Only the **App Owner** can save changes; Administrators, Editors, and Viewers see the form in read-only mode with a banner.
+
+<Figure src="/images/ws-app-settings.png" alt="App general settings page in Mattin AI" caption="The App Settings page (Settings → General) where Administrators configure the App name, slug, LangSmith tracing key, rate limits, file size cap, CORS origins, and the OpenAI-compatible API toggle." />
+
+## Prerequisites
+
+- An App you own. Only the App Owner can save changes to General Settings.
+- See [Apps](/workspace/apps) for how to create one.
+
+## Open App Settings
+
+<Steps>
+  <Step>
+  ### Navigate to your App
+  From the My Apps list, click the App name or select **Open Dashboard** from the Actions menu.
+  </Step>
+  <Step>
+  ### Open General Settings
+  In the App sidebar, click **Settings**, then select **General**.
+  </Step>
+</Steps>
+
+## Field reference
+
+| Field | Type | Default | Description |
+|---|---|---|---|
+| **App Name** | Text | — | Display name used in navigation, API responses, and LangSmith project labels. Required. |
+| **App Slug** | Text | — | Lowercase URL-friendly identifier (`[a-z0-9-]+`), unique across the platform. Used in MCP server URLs (e.g., `/mcp/v1/my-app/my-server`). Saved separately with the **Update Slug** button. |
+| **Langsmith API Key** | Password | — | Per-App key for LangSmith tracing. When set, agent traces for this App go to a LangSmith project named after the App. Falls back to the global `LANGSMITH_API_KEY` env var when `LANGSMITH_TRACING=true` is set on the server. Use **Test connection** to verify before saving. |
+| **Agent Rate Limit** | Integer | `0` | Maximum agent calls per minute for this App across all public API consumers. Set to `0` for unlimited. Enforced by `X-RateLimit-*` response headers. |
+| **Maximum File Size (MB)** | Integer | `0` | Upload size cap for files added to repositories. Set to `0` for no limit. |
+| **Agent CORS Origins** | Text | — | Comma-separated list of origins allowed to call the public agent endpoints (e.g., `https://your-site.example.com, https://staging.example.com`). Leave empty to allow no cross-origin access. |
+| **Enable OpenAI-compatible API** | Toggle | off | When enabled, exposes agents via OpenAI-format chat completion endpoints (`/public/v1/app/{app_id}/openai/v1/chat/completions`). Allows tools and SDKs that expect the OpenAI API to target Mattin AI agents directly. Does not affect internal or MCP endpoints. |
+
+<Callout type="warn">
+Only the App **Owner** can save General Settings changes (`PUT /internal/apps/{app_id}` enforces an owner check). Administrators, Editors, and Viewers see the form but the **Save Changes** button is hidden.
+</Callout>
+
+## LangSmith integration
+
+LangSmith traces every agent invocation — inputs, outputs, chain steps, token counts, and latency. The per-App key stored in `langsmith_api_key` takes precedence over any server-level environment variable.
+
+<Steps>
+  <Step>
+  ### Enter your LangSmith API key
+  Paste the key in the **Langsmith API Key** field. The field is a password input; the stored value is masked on subsequent loads.
+  </Step>
+  <Step>
+  ### Test the connection
+  Click **Test connection**. The backend calls `POST /internal/apps/{app_id}/langsmith/test`, which validates the key against the LangSmith API and returns the project name the traces will be sent to.
+
+  Result badges:
+  - Green checkmark — connected, shows the project name.
+  - Red X — key is invalid or expired.
+  - Amber Wi-Fi icon — LangSmith is unreachable (network or endpoint misconfiguration).
+  </Step>
+  <Step>
+  ### Save Changes
+  Click **Save Changes**. The cached LangSmith client is invalidated immediately, so the next agent call picks up the new key.
+  </Step>
+</Steps>
+
+<Callout type="info">
+If the key field is left empty and `LANGSMITH_TRACING=true` is set in the server environment, the global `LANGSMITH_API_KEY` and `LANGSMITH_PROJECT` env vars are used as a fallback. The **Test connection** button tests whichever key is active (per-App key if set, global fallback otherwise).
+</Callout>
+
+## App Slug
+
+The slug is stored separately from the name and saved with its own **Update Slug** button. The UI enforces lowercase letters, numbers, and hyphens only (`[a-z0-9-]+`); any other characters typed are silently stripped.
+
+Slugs are used in human-readable MCP server URLs:
+
+```
+/mcp/v1/{app-slug}/{server-slug}
+```
+
+instead of numeric IDs. The slug must be unique platform-wide; a validation error is returned if another App already uses the value.
+
+## Rate limiting and file size
+
+`agent_rate_limit` governs the public API (`/public/v1/`). When the limit is exceeded, the API returns `429 Too Many Requests` with `X-RateLimit-Reset` indicating when the window resets. Internal (session-based) API calls are not rate-limited.
+
+`max_file_size_mb` applies to file uploads into repositories. The frontend enforces this limit on the upload form; the backend also validates it.
+
+<Callout type="info">
+Rate limit usage is shown as a live speedometer on the App dashboard. The **Top Agents by Usage** leaderboard is also on the dashboard.
+</Callout>
+
+## OpenAI-compatible API
+
+When `enable_openai_api` is `true`, agents become accessible at:
+
+```
+POST /public/v1/app/{app_id}/openai/v1/chat/completions
+GET  /public/v1/app/{app_id}/openai/v1/models
+```
+
+These endpoints mimic the OpenAI API format, so clients that target OpenAI (LangChain, LlamaIndex, various chat UIs) can be pointed at Mattin AI with minimal changes. Authentication still uses `X-API-KEY` (see [API Keys](/workspace/api-keys)).
+
+## Related
+
+<Cards>
+  <Card title="API Keys" href="/workspace/api-keys">
+    Generate App-scoped keys for the public API that rate limiting applies to
+  </Card>
+  <Card title="Collaboration" href="/workspace/collaboration">
+    Invite collaborators and assign roles including Administrator
+  </Card>
+  <Card title="Apps" href="/workspace/apps">
+    Create Apps and understand the full App lifecycle
+  </Card>
+  <Card title="Agents" href="/building-agents/agents">
+    Build agents that consume the AI services configured per App
+  </Card>
+</Cards>
