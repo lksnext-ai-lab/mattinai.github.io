@@ -28,6 +28,17 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Build docs (Fumadocs)
+        run: |
+          cd docs-site
+          npm ci
+          npm run build
+
+      - name: Merge docs into site
+        run: |
+          mkdir -p dist/docs
+          cp -a docs-site/out/. dist/docs/
+
       # Only upload artifact when deploying (push to main)
       - name: Upload Pages artifact
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'

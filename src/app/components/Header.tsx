@@ -54,9 +54,7 @@ export function Header() {
                 <Github className="w-5 h-5" />
               </a>
               <a
-                href="https://github.com/lksnext-ai-lab/ai-core-tools/blob/develop/docs/README.md"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/docs/"
                 className="text-[#222222] hover:text-[#F26B3A] transition-colors"
                 aria-label="Documentation"
               >
@@ -123,9 +121,7 @@ export function Header() {
                   <Github className="w-5 h-5" />
                 </a>
                 <a
-                  href="https://github.com/lksnext-ai-lab/ai-core-tools/blob/develop/docs/README.md"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href="/docs/"
                   className="text-[#222222] hover:text-[#F26B3A] transition-colors"
                 >
                   <BookOpen className="w-5 h-5" />

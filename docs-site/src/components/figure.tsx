@@ -1,3 +1,5 @@
+import { basePath } from '@/lib/shared';
+
 export interface FigureProps {
   readonly src: string;
   readonly alt: string;
@@ -10,7 +12,7 @@ export function Figure({ src, alt, caption }: FigureProps) {
       {/* Plain <img> — next/image is incompatible with output: 'export' without a loader */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src={src}
+        src={`${basePath}${src}`}
         alt={alt}
         className="rounded-lg border border-fd-border shadow-sm max-w-full h-auto"
       />

@@ -1,4 +1,5 @@
 export const appName = 'Mattin AI';
+export const basePath = '/docs';
 export const docsRoute = '/';
 export const docsImageRoute = '/og/docs';
 export const docsContentRoute = '/llms.mdx/docs';

@@ -129,9 +129,7 @@ export function QuickStart() {
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
             <a
-              href="https://github.com/lksnext-ai-lab/ai-core-tools/blob/develop/docs/README.md"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/docs/"
               className="bg-gradient-to-r from-[#F26B3A] to-[#d45a2f] text-white px-8 py-4 rounded-lg hover:shadow-[0_0_30px_rgba(242,107,58,0.3)] transition-all inline-flex items-center justify-center gap-2 font-medium"
             >
               <BookOpen className="w-5 h-5" />

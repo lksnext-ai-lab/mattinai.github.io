@@ -116,9 +116,7 @@ export function Features() {
               {t.features.cta.repository}
             </a>
             <a
-              href="https://github.com/lksnext-ai-lab/ai-core-tools/blob/develop/docs/README.md"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="/docs/"
               className="border-2 border-[#F26B3A] text-[#F26B3A] px-8 py-4 rounded-lg hover:bg-[#F26B3A] hover:text-white transition-all inline-flex items-center justify-center gap-2 font-medium"
             >
               <BookOpen className="w-5 h-5" />
