@@ -1,0 +1,155 @@
+---
+title: "Playground"
+description: "Test agents and silos interactively: conversation management, file attachments, memory controls, and streaming responses."
+---
+
+The **Playground** is the interactive chat interface for testing agents. Each Playground session creates a **Conversation** — a persistent chat thread with its own history. There are three playground surfaces in Mattin AI:
+
+- **Agent Playground** — Chat with an agent. Streams token-by-token responses.
+- **Silo Playground** — Run raw vector searches against a Silo's contents.
+- **Repository Playground** — Run vector searches scoped to a single Repository.
+
+## Agent Playground
+
+### Open the Playground
+
+<Steps>
+  <Step>
+  ### Navigate to your agent
+  Inside your App, go to **App → Agents** and click the agent you want to test.
+  </Step>
+  <Step>
+  ### Click Open Playground
+  Click **Open Playground** (the chat icon on the agent row, or the button on the agent detail page). The Playground opens.
+  </Step>
+  <Step>
+  ### Send a message
+  Type a message in the input box at the bottom and press **Enter** or click **Send**. The agent's response streams word-by-word as the LLM generates it.
+  </Step>
+</Steps>
+
+### Conversation History
+
+Conversations are saved automatically. You can:
+
+- **Continue** a previous conversation by selecting it from the sidebar on the left.
+- **Browse** all conversations for the current agent in the sidebar.
+- **Start a new conversation** by clicking **New Conversation** in the header. The old conversation is preserved in history.
+- **Delete** a conversation you no longer need from the sidebar.
+
+<Callout type="info">
+If the agent has memory enabled, it uses the conversation history to answer follow-up questions. Starting a new conversation resets the memory context without deleting the old thread.
+</Callout>
+
+### File Attachments
+
+You can attach files to messages. The agent processes the file and uses its content when answering.
+
+<Steps>
+  <Step>
+  ### Click the attachment icon
+  Click the paperclip icon in the chat input area.
+  </Step>
+  <Step>
+  ### Select a file
+  Choose a file from your device.
+  </Step>
+  <Step>
+  ### Send
+  Type your message and send. The agent receives both the message and the file content.
+  </Step>
+</Steps>
+
+**Supported attachment types:**
+
+| Type | How the agent uses it |
+|---|---|
+| PDF | Extracts and reads the text; falls back to OCR if no text layer is present |
+| Images (PNG, JPG) | Reads text via OCR or analyzes the image directly (if the LLM is multimodal) |
+| Audio (MP3, WAV) | Transcribes the audio to text |
+| TXT, MD | Reads the content directly |
+
+### Streaming and Stop
+
+Responses appear word by word as the LLM generates them. You can stop a response mid-stream by clicking **Stop** — the partial response is preserved in the conversation.
+
+### View the System Prompt
+
+Click **Edit Prompts** (pencil icon) in the Playground header to open the Prompt modal. This shows the current system prompt for the agent and lets authorized users edit it without leaving the Playground.
+
+### OCR Agents
+
+When the agent type is `ocr_agent`, the **Playground** tab itself becomes an OCR interface: upload a scanned document and the agent returns the extracted and structured output. The **API Examples** tab is available for all agent types, including OCR agents, and shows ready-to-paste code for calling the agent programmatically.
+
+## Silo Playground
+
+The Silo Playground runs raw vector queries against a Silo — without involving an agent. Use it to inspect what content the Silo contains and tune retrieval settings before connecting the Silo to an agent.
+
+<Steps>
+  <Step>
+  ### Open the Silo Playground
+  Navigate to **App → Silos**, click a Silo, then click **Open Playground**.
+  </Step>
+  <Step>
+  ### Enter a search query
+  Type a question or phrase and click **Search**.
+  </Step>
+  <Step>
+  ### Inspect results
+  Results show matched document chunks with relevance scores, source attribution, and metadata. Expand a chunk to read its full text, or copy it as JSON.
+  </Step>
+  <Step>
+  ### Adjust search parameters
+  Use the controls to change **Top-K** (number of results to return), **Search Type**, and optional advanced parameters:
+  - `similarity` — Standard cosine similarity (default).
+  - `similarity_score_threshold` — Filter results below a minimum relevance score.
+  - `mmr` — Maximal Marginal Relevance; reduces duplicate chunks. Requires `fetch_k`.
+  </Step>
+</Steps>
+
+**Additional Silo Playground features:**
+
+| Feature | Description |
+|---|---|
+| **Query history** | Last 20 queries per Silo, persisted in `localStorage` |
+| **A/B compare mode** | Run two different queries side by side with shared-chunk highlighting |
+| **Faceted filters** | Filter results by metadata field values using an autocomplete-driven filter builder |
+| **Bulk delete** | Multi-select chunks and delete them; or delete-by-filter with a dry-run count |
+| **Neighboring chunks** | Show all chunks from the same source document in reading order |
+| **API snippets** | Ready-to-paste cURL, Python, JavaScript, and TypeScript code mirroring the current search request |
+| **Latency badge** | Per-search server-side latency shown from the `X-Server-Time-Ms` response header |
+
+<Callout type="info">
+Use **Test against agent** in the Silo Playground to open the Agent Playground with your current search query pre-filled, so you can quickly verify how the agent uses the retrieved content.
+</Callout>
+
+## Repository Playground
+
+The Repository Playground is a lighter version of the Silo Playground scoped to a single Repository. Open it from the repository detail view by clicking **Search**.
+
+It supports the same basic query interface and metadata filters but does not include the advanced features (A/B compare, bulk delete, API snippets) available in the full Silo Playground.
+
+## Platform Chatbot
+
+If a platform administrator has configured a platform chatbot, a floating chat button appears in the bottom-right corner of every page. This is a special agent accessible site-wide. It works identically to the Agent Playground but is always available during navigation. Click **New Conversation** in its header to start a fresh session.
+
+<Callout type="info">
+In client white-label deployments, the playground layout and certain features may be adjusted via `clientConfig.ts`. The underlying chat and retrieval behavior remains the same.
+</Callout>
+
+## Related
+
+<Cards>
+  <Card title="Agents" href="/building-agents/agents">
+    Configure the agent you are testing
+  </Card>
+  <Card title="Silos and RAG" href="/knowledge-rag/silos-and-rag">
+    Understand how the Silo provides context to the agent
+  </Card>
+  <Card title="Repositories" href="/knowledge-rag/repositories">
+    Upload the documents that appear in Silo search results
+  </Card>
+  <Card title="API Keys" href="/workspace/api-keys">
+    Call agents programmatically instead of through the UI
+  </Card>
+</Cards>

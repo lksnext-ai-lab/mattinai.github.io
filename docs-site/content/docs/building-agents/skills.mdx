@@ -1,0 +1,125 @@
+---
+title: "Skills"
+description: "Reusable prompt blocks you attach to agents to add specialized behavior."
+---
+
+Skills are reusable blocks of Markdown instructions scoped to an App. When an agent has skills assigned, the agent's system prompt automatically lists the available skills and the agent gains a `load_skill` tool it can call on-demand to load the full instructions for a relevant skill.
+
+This is different from hard-coding instructions into the system prompt: skills are activated only when relevant, which keeps context window usage down and makes prompt management easier across multiple agents.
+
+<Figure src="/images/ba-skills.png" alt="Skills management page in Mattin AI" caption="The Skills page lists an App's reusable prompt blocks. Each skill becomes a load_skill tool the agent can invoke on demand." />
+
+## When to use skills
+
+- Instructions that apply to several agents (language rules, tone guides, escalation procedures).
+- Domain knowledge that is too verbose for a system prompt (product glossaries, compliance checklists).
+- Modular behavior that only applies to certain tasks the agent handles.
+
+## Creating a skill
+
+Skills live under **App Settings > Skills**. An ADMINISTRATOR role is required to create or edit them.
+
+<Steps>
+  <Step>
+    ### Open the Skills page
+
+    In your App, navigate to **Settings** and select **Skills** from the sidebar. Click **Add Skill**.
+  </Step>
+
+  <Step>
+    ### Fill in the skill fields
+
+    | Field | Required | Notes |
+    |-------|----------|-------|
+    | **Name** | Yes | Short, descriptive label. The agent uses this name to look up the skill with `load_skill`. |
+    | **Description** | No | The agent reads this description to decide when the skill is relevant. Be specific. |
+    | **Skill Instructions** | Yes | The full Markdown-formatted instructions that are loaded when the skill is activated. |
+
+    <Callout type="info">
+      The description is what the agent sees in its system prompt to decide whether to load a skill. The instructions are only retrieved when the agent explicitly calls `load_skill`. Keep descriptions concise and action-oriented.
+    </Callout>
+  </Step>
+
+  <Step>
+    ### Save and assign to agents
+
+    Click **Create Skill**. The skill is now available in the App's skill library. You will assign it to agents in the next step.
+  </Step>
+</Steps>
+
+## Attaching skills to an agent
+
+Skills are assigned from the agent form, under the **Advanced** tab.
+
+<Steps>
+  <Step>
+    ### Open the agent form
+
+    Go to **Agents**, click on an agent, then click **Edit**. Navigate to the **Advanced** tab.
+  </Step>
+
+  <Step>
+    ### Select skills
+
+    Under the **Skills** section, check the skills you want to assign. Each selected skill appears as a card. When at least one skill is selected, the UI confirms:
+
+    > "N skills selected. The agent will have a `load_skill` tool to activate these skills."
+  </Step>
+
+  <Step>
+    ### Save the agent
+
+    Click **Save Changes**. The skills take effect immediately on the next conversation.
+  </Step>
+</Steps>
+
+## How skills work at runtime
+
+When the agent is invoked:
+
+1. The backend appends an `<available_skills>` section to the system prompt listing each skill name and description.
+2. A `load_skill` tool is added to the agent's tool set.
+3. When the agent decides a skill is relevant, it calls `load_skill` with the skill name.
+4. The tool returns the full `content` of that skill wrapped in an activation header.
+5. The agent incorporates those instructions into its response.
+
+Skills also work for agents used as tools by other agents — the same injection and loader mechanism applies to sub-agents.
+
+## Skill field reference
+
+| Model field | Type | Description |
+|-------------|------|-------------|
+| `name` | `String(100)` | Required. Used as the lookup key (case-insensitive) by `load_skill`. |
+| `description` | `String(1000)` | Optional. Shown to the agent so it can decide when to activate the skill. |
+| `content` | `Text` | Required. Markdown instructions returned when the skill is loaded. |
+| `is_frozen` | `Boolean` | When `true`, the skill cannot be modified. Default: `false`. |
+| `app_id` | FK | Skills are scoped to an App and cannot be shared across Apps directly. |
+
+## Example skills
+
+| Skill name | Description | Instructions excerpt |
+|------------|-------------|----------------------|
+| Language rule | "Respond in the same language the user writes in." | `Always match the user's language...` |
+| Tone guide | "Apply formal, professional tone for B2B responses." | `Use formal register. Avoid contractions...` |
+| Product glossary | "Load when user asks about product names or abbreviations." | `# Product Glossary\n- AICT: AI Core Tools...` |
+| Escalation | "Use when the agent cannot answer a question." | `Tell the user to contact support@example.com...` |
+
+<Callout type="warn">
+  Very long skill instructions consume context window when loaded. Keep each skill focused on one concern. If you need many rules, split them into separate skills so the agent only loads what it needs.
+</Callout>
+
+<Callout type="info">
+  Skills are injected in the order they are associated with the agent. Duplicate skill names (after lowercasing) are deduplicated — only the first occurrence is kept.
+</Callout>
+
+<Cards>
+  <Card title="Agents" href="/building-agents/agents">
+    Create and configure agents
+  </Card>
+  <Card title="Playground" href="/building-agents/playground">
+    Test agents with skills in the Playground
+  </Card>
+  <Card title="Agent as Tool" href="/building-agents/agent-as-tool">
+    Skills work in sub-agents too
+  </Card>
+</Cards>

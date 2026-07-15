@@ -1,0 +1,71 @@
+---
+title: "Introduction"
+description: "An overview of Mattin AI — what it is, how it is organised, and where to go next."
+---
+
+Mattin AI is a web platform for creating and operating AI assistants backed by large language models (LLMs). You connect one or more LLM providers, configure agents with system prompts, optional knowledge bases, and tools, then chat with those agents through the built-in Playground or call them programmatically via the public API.
+
+Everything inside the platform is scoped to an **App** (workspace). A single installation can hold many Apps — one per team, project, or client deployment — each with its own agents, knowledge bases, API keys, and collaborators.
+
+## What you do with it
+
+The typical workflow moves through four stages:
+
+1. **Create an App** — your isolated workspace. All resources (agents, silos, API keys, LLM connections) live inside it.
+2. **Connect an AI Service** — register credentials for an LLM provider (OpenAI, Anthropic, Azure OpenAI, MistralAI, Google AI Studio, Google Cloud Vertex AI, or a self-hosted endpoint). Agents draw on these connections.
+3. **Configure Agents** — each agent has a system prompt, an assigned AI Service, optional memory settings, and optional access to a knowledge base (Silo) or external tools via MCP.
+4. **Build knowledge bases (Silos)** — create a Silo, then fill it with uploaded document collections (Repositories) or crawled web sources (Domains). Agents with a linked Silo retrieve relevant context before answering.
+
+Once configured, you can chat with an agent in the **Playground**, export the whole App for reuse, and expose agents to external callers through the **public API** (authenticated with a per-App API key).
+
+<Callout type="info">
+  Agents marked `is_tool=True` can be used as tools by other agents, enabling multi-step compositions without external orchestration code.
+</Callout>
+
+## Core concepts at a glance
+
+| Concept | What it does |
+|---------|-------------|
+| **App** | Workspace that groups all resources. Supports collaborators with role-based access (Viewer / Editor / Administrator / Owner). |
+| **Agent** | AI assistant defined by a system prompt, an AI Service, and optional Silo, memory, Skills, Output Parser, and MCP tool configs. |
+| **AI Service** | Stored credentials for an LLM provider. Agents reference an AI Service rather than holding keys directly. |
+| **Silo** | Vector knowledge base backed by PGVector or Qdrant. Linked agents retrieve from it at query time. |
+| **Repository** | Collection of uploaded files (PDFs, documents) inside a Silo. Files are vectorised on upload. |
+| **Domain** | Web source whose pages are crawled and indexed into a Silo. |
+| **Skill** | Reusable markdown instruction block attached to one or more agents. Injected into the system prompt at execution time. |
+| **Output Parser** | JSON schema that constrains an agent to return structured data instead of free text. |
+| **API Key** | 64-character key scoped to an App. Used to authenticate public API and MCP requests. |
+| **MCP** | Model Context Protocol support — Mattin AI can expose agents as MCP tools and consume external MCP servers. |
+
+## Where to go next
+
+<Cards>
+  <Card
+    title="Core Concepts"
+    href="/getting-started/core-concepts"
+  >
+    Detailed explanation of Apps, Agents, Silos, and how they relate to each other.
+  </Card>
+  <Card
+    title="Quickstart"
+    href="/getting-started/quickstart"
+  >
+    Stand up the platform locally and run your first agent conversation in minutes.
+  </Card>
+  <Card
+    title="Guides"
+    href="/workspace/apps"
+  >
+    Step-by-step instructions for Apps, Agents, Silos, Repositories, the Playground, and API keys.
+  </Card>
+  <Card
+    title="API Reference"
+    href="/api-reference/introduction"
+  >
+    Public REST API reference — authentication, endpoints, and request/response shapes.
+  </Card>
+</Cards>
+
+<Callout type="info">
+  The platform ships with a demo App (`scripts/demo-app.json`) that contains six pre-configured agents covering RAG, structured output, MCP integration, and OCR. Import it from **Apps → Import App** to explore a fully wired workspace without manual setup.
+</Callout>

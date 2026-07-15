@@ -1,0 +1,13 @@
+{
+  "title": "Mattin AI",
+  "pages": [
+    "index",
+    "getting-started",
+    "building-agents",
+    "knowledge-rag",
+    "integrations",
+    "workspace",
+    "marketplace",
+    "api-reference"
+  ]
+}

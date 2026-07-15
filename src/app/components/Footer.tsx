@@ -44,7 +44,7 @@ export function Footer() {
               <h4 className="text-white font-bold mb-4">{t.footer.resources}</h4>
               <ul className="space-y-2 text-sm">
                 <li>
-                  <a href="https://github.com/lksnext-ai-lab/ai-core-tools/blob/develop/docs/README.md" target="_blank" rel="noopener noreferrer" className="hover:text-[#F26B3A] transition-colors">
+                  <a href="/docs/" className="hover:text-[#F26B3A] transition-colors">
                     {t.footer.documentation}
                   </a>
                 </li>

@@ -1,0 +1,120 @@
+---
+title: "API Reference"
+description: "Programmatic access to Mattin AI via the public REST API. Authenticate with an App-scoped API key and call agents, chat, files, silos, repositories, OCR, and the OpenAI-compatible endpoint."
+---
+
+The Mattin AI public API lets external applications access an App's agents and resources over HTTP. It is separate from the internal API used by the Mattin AI frontend and requires its own authentication.
+
+## Base URL
+
+All public API endpoints are mounted under `/public/v1`. Every route is further scoped to a specific App:
+
+```
+https://your-instance.example.com/public/v1/app/{app_id}/
+```
+
+Replace `your-instance.example.com` with your deployment host and `{app_id}` with the numeric ID of the App you are targeting (it appears in the URL when you open an App in the Mattin AI interface). The OpenAI-compatible endpoint (`/openai/v1`) additionally accepts an App slug in place of the numeric ID.
+
+## Authentication
+
+Every request must include an `X-API-KEY` header carrying a valid App-scoped API key:
+
+```http
+X-API-KEY: your-api-key
+```
+
+API keys are created from the **API Keys** settings page inside an App. Each key is scoped to the App it was created in — it cannot access agents or resources from other Apps. Keys are shown only once at creation; store yours securely.
+
+<Callout type="info">
+  See [API Keys](/workspace/api-keys) for step-by-step instructions on creating
+  and managing keys.
+</Callout>
+
+<Callout type="info">
+  The OpenAI-compatible endpoints (`/openai/v1/models` and
+  `/openai/v1/chat/completions`) additionally accept the same key as a standard
+  Bearer token (`Authorization: Bearer your-api-key`), so OpenAI-compatible SDKs
+  work against Mattin AI without modification.
+</Callout>
+
+<Tabs items={["curl", "Python"]}>
+<Tab value="curl">
+```bash
+curl https://your-instance.example.com/public/v1/app/{app_id}/agents \
+  -H "X-API-KEY: your-api-key"
+```
+</Tab>
+<Tab value="Python">
+```python
+import requests
+
+response = requests.get(
+    "https://your-instance.example.com/public/v1/app/{app_id}/agents",
+    headers={"X-API-KEY": "your-api-key"},
+)
+response.raise_for_status()
+print(response.json())
+```
+</Tab>
+</Tabs>
+
+## Rate Limiting
+
+Requests are rate-limited per App. The limit is configured on each App's settings (the `agent_rate_limit` field). When the limit is `0` the App has unlimited requests.
+
+Every response includes the following headers so clients can track their usage:
+
+| Header | Description |
+|---|---|
+| `X-RateLimit-Limit` | Maximum requests allowed in the current window (`0` = unlimited) |
+| `X-RateLimit-Remaining` | Requests remaining in the current window |
+| `X-RateLimit-Reset` | Unix timestamp when the window resets |
+
+When the limit is exceeded the API returns `429 Too Many Requests`:
+
+```http
+HTTP/1.1 429 Too Many Requests
+Retry-After: 42
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 0
+X-RateLimit-Reset: 1750000000
+
+{
+  "detail": "Rate limit exceeded. Maximum 100 requests per minute allowed."
+}
+```
+
+Implement exponential backoff and respect the `Retry-After` header when handling 429 responses.
+
+## Endpoints
+
+Each endpoint is documented as its own interactive page in the **API Reference** section of the sidebar, generated from the OpenAPI spec. The endpoints are grouped as follows, all rooted at `/public/v1/app/{app_id}/`:
+
+| Group | Prefix | Description |
+|---|---|---|
+| Agents | `/agents` | List and retrieve agents |
+| Chat | `/chat` | Execute agents (streaming SSE) |
+| Files | `/files` | Pre-attach files to agents |
+| Repositories | `/repositories` | List repositories and their resources |
+| Silos | `/silos` | List and retrieve vector-store silos |
+| Resources | `/resources` | Retrieve and download resources |
+| OCR | `/ocr` | Extract text from images |
+| OpenAI-compatible | `/openai/v1` | OpenAI-compatible chat completions endpoint |
+
+## Snapshot Provenance
+
+<Callout type="info">
+  The interactive endpoint reference in the sidebar is rendered from a committed
+  snapshot of the public OpenAPI spec located at
+  `docs-site/api-reference/openapi.json`. The snapshot is generated in-process
+  from the backend's resolved schema (the `/public/v1` subset of the FastAPI
+  app's `/openapi.json`) using the script `docs-site/scripts/export-openapi.py`.
+  To regenerate it after backend changes, run, from the repo root with the
+  backend dependencies installed:
+
+  ```bash
+  python docs-site/scripts/export-openapi.py
+  ```
+
+  Then commit the updated `openapi.json`.
+</Callout>

@@ -1,0 +1,164 @@
+---
+title: "Silos and RAG"
+description: "Build vector knowledge bases with Silos, choose between PGVector and Qdrant per silo, and enable retrieval-augmented generation for your agents."
+---
+
+A **Silo** is a named vector knowledge base inside an App. It stores document content as vector embeddings so that agents can search it semantically — finding relevant information even when a user's question does not match exact keywords. This technique is called **Retrieval-Augmented Generation (RAG)**.
+
+Each Silo has its own vector database backend (PGVector or Qdrant) and its own embedding model. A single App can have multiple Silos, each using different backends or embedding providers.
+
+## Prerequisites
+
+- An App to create the Silo in (see [Apps](/workspace/apps)).
+- At least one **Embedding Service** configured in the App (Settings → Embedding Services). This determines how documents are converted to vectors.
+
+## Create a Silo
+
+<Figure src="/images/silos.png" alt="Silos page empty state showing the New Silo button" caption="The Silos page in an App's Data section before any silos have been created. Use New Silo to provision a named vector knowledge base." />
+
+<Steps>
+  <Step>
+  ### Open Silos
+  Inside your App, click **Silos** on the dashboard or navigate to **App → Silos**.
+  </Step>
+  <Step>
+  ### Click New Silo
+  Click **New Silo**. The Silo form opens.
+  </Step>
+  <Step>
+  ### Enter a name and description
+  Give the Silo a descriptive name (e.g., `Product Documentation`). The description is optional but useful when you have multiple Silos.
+  </Step>
+  <Step>
+  ### Select an Embedding Service
+  Choose the embedding model that will be used to vectorize documents added to this Silo. All documents in the Silo must use the same embedding service; changing it later requires re-indexing.
+  </Step>
+  <Step>
+  ### Choose a vector database backend
+  Select either **PGVector** or **Qdrant** for this Silo. See the comparison below. This choice is permanent — the backend cannot be changed after the Silo is created.
+  </Step>
+  <Step>
+  ### Save
+  Click **Save**. The empty Silo is created. Populate it by adding Repositories (uploaded files) or Domains (web crawling).
+  </Step>
+</Steps>
+
+## PGVector vs Qdrant
+
+Each Silo independently selects its own vector database backend. The factory in `backend/tools/vector_store_factory.py` routes all queries through a unified interface regardless of the backend chosen.
+
+| | PGVector | Qdrant |
+|---|---|---|
+| **Setup** | Included with the PostgreSQL database — no extra service needed | Requires a separate Qdrant server (`QDRANT_URL` env var) |
+| **Query latency** | Good (10–50 ms) | Excellent (\< 10 ms) |
+| **Scale** | Well-suited for small to medium deployments (\< 1 M vectors) | Better for large deployments (\> 1 M vectors) or high-throughput |
+| **Maintenance** | Single PostgreSQL instance | Separate Qdrant service to operate |
+| **Collection naming** | `silo_{id}` in `langchain_pg_embedding` | `silo_{id}` in Qdrant collections |
+
+<Callout type="info">
+Start with **PGVector** unless you have a specific reason to use Qdrant. It requires no additional infrastructure and works well for most use cases. Switch to Qdrant when you need high-throughput search or are storing more than a million vectors.
+</Callout>
+
+<Callout type="info">
+The platform's default vector DB type is controlled by the `VECTOR_DB_TYPE` environment variable, but each Silo can override this independently. One App can have some PGVector Silos and some Qdrant Silos simultaneously.
+</Callout>
+
+## Silo Fields Reference
+
+| Field | Description |
+|---|---|
+| **Name** | Display name for the Silo |
+| **Description** | Optional summary of the Silo's contents |
+| **Embedding Service** | The embedding model used to generate vectors for all documents in this Silo |
+| **Vector DB Type** | `PGVECTOR` or `QDRANT`. Fixed at creation. |
+
+## Populate a Silo
+
+An empty Silo has no content to search. Add content via:
+
+- **Repositories** — Upload PDF, Word, TXT, Markdown, image, or audio files. See [Repositories](/knowledge-rag/repositories).
+- **Domains** — Crawl a website. Navigate to **App → Domains → New Domain**, enter a base URL, configure crawl depth, and start the crawl.
+
+## Link a Silo to an Agent
+
+Once a Silo is populated, connect it to an agent so the agent can search it when answering questions.
+
+<Steps>
+  <Step>
+  ### Open the agent form
+  Navigate to **App → Agents** and click the agent you want to configure (or create a new one).
+  </Step>
+  <Step>
+  ### Select the Silo
+  On the **Configuration** tab, select the Silo from the **Knowledge Base (Silo)** dropdown.
+  </Step>
+  <Step>
+  ### Save and test
+  Save the agent. Open the Playground and ask a question about the Silo's content to confirm retrieval is working.
+  </Step>
+</Steps>
+
+## Test Retrieval in the Silo Playground
+
+The Silo Playground lets you run raw vector searches against the Silo without involving an agent. It is the primary tool for inspecting and tuning what the Silo contains.
+
+<Steps>
+  <Step>
+  ### Open the Silo Playground
+  Navigate to **App → Silos**, click the Silo, then click **Open Playground**.
+  </Step>
+  <Step>
+  ### Enter a search query
+  Type a question or phrase in the search box and click **Search**.
+  </Step>
+  <Step>
+  ### Inspect results
+  Results show the matched document chunks with relevance scores, source attribution (repository name and page), and a metadata tree. Expand a chunk to read the full text or copy it as JSON.
+  </Step>
+  <Step>
+  ### Tune search parameters
+  Adjust **Top-K** (number of results), **Search Type**, and optional filters:
+  - `similarity` — Standard cosine similarity ranking (default).
+  - `similarity_score_threshold` — Only return results at or above a minimum relevance score.
+  - `mmr` — Maximal Marginal Relevance; balances relevance and diversity to avoid near-duplicate chunks. Requires `fetch_k` and optional `lambda_mult`.
+  </Step>
+</Steps>
+
+<Callout type="info">
+Use the **API Snippets** panel in the Silo Playground to get ready-to-paste cURL, Python, JavaScript, and TypeScript code that mirrors your current search settings with a placeholder API key (`mattin_...`).
+</Callout>
+
+## RAG in Practice
+
+When a user sends a message to an agent that has a linked Silo:
+
+1. The platform generates an embedding of the user's message.
+2. It runs a similarity search against the Silo to retrieve the top-K most relevant chunks. The number of results returned is a search-time parameter (the **Top K** control in the Silo Playground).
+3. The retrieved chunks are injected into the agent's context alongside the user's message.
+4. The LLM generates a response grounded in that retrieved context.
+
+The agent can reference which document a piece of information came from if the system prompt instructs it to do so.
+
+## Tips for Better Retrieval
+
+- Remove headers, footers, page numbers, and boilerplate before uploading documents.
+- Keep documents focused — mixed-topic documents produce lower-quality retrieval.
+- Re-upload documents after editing them; updating in place does not re-index the content.
+- Test with the Silo Playground before connecting the Silo to an agent.
+
+## Related
+
+<Cards>
+  <Card title="Repositories" href="/knowledge-rag/repositories">
+    Upload files and vectorize them into a Silo
+  </Card>
+  <Card title="Agents" href="/building-agents/agents">
+    Link a Silo to an agent to enable RAG
+  </Card>
+  <Card title="Playground" href="/building-agents/playground">
+    Test your agent's retrieval in the chat playground
+  </Card>
+  <Card title="Apps" href="/workspace/apps">
+    Manage the App workspace that contains your Silos
+  </Card>
+</Cards>

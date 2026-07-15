@@ -1,0 +1,133 @@
+---
+title: "API Keys"
+description: "Create App-scoped API keys for programmatic access to the public API and MCP endpoints. Keys are shown only once at creation."
+---
+
+An **API Key** grants external applications programmatic access to the Mattin AI public API (`/public/v1/`) and MCP endpoints. Each key is scoped to a specific App — it can only access agents and resources within that App.
+
+## Prerequisites
+
+- An App with at least the **Administrator** role (see [Apps](/workspace/apps)).
+- A connected external application or integration that needs to call the API.
+
+## Create an API Key
+
+<Figure src="/images/api-keys.png" alt="API Keys settings page with the Create API Key button and security notice" caption="The API Keys settings page showing the key list and the security notice that keys are displayed only once at creation." />
+
+<Steps>
+  <Step>
+  ### Open API Keys settings
+  Inside your App, navigate to **Settings → API Keys**.
+  </Step>
+  <Step>
+  ### Click Create API Key
+  Click the **Create API Key** button. The creation form opens.
+  </Step>
+  <Step>
+  ### Enter a name
+  Give the key a descriptive name that identifies its purpose or the application it belongs to (e.g., `Production Integration`, `Mobile App Key`).
+  </Step>
+  <Step>
+  ### Set Active status
+  The **Active** checkbox is on by default. Leave it enabled to make the key usable immediately. You can deactivate it later without deleting it.
+  </Step>
+  <Step>
+  ### Click Create API Key
+  Click **Create API Key** to submit the form.
+  </Step>
+  <Step>
+  ### Copy the key immediately
+  The generated key is displayed once in a modal. Copy and store it in a secure location (a secrets manager, environment variable, or password vault) before closing the dialog.
+  </Step>
+</Steps>
+
+## Key Format
+
+Keys are generated as a 32-character alphanumeric string (letters and digits, no prefix). The `APIKey.key` column is `String(64)`, which is the maximum length, not the output length. After creation, only the first 8 characters are stored for display (the masked preview shown in the list).
+
+The `mattin_` prefix used in documentation examples is a placeholder convention only — it does not appear in actual key values. Example placeholder:
+
+```
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+```
+
+<Callout type="warn">
+The API key value is shown **only once** at the time of creation. Copy and store it in a secure location before closing the dialog. There is no way to retrieve the full key again — if lost, delete the key and create a new one.
+</Callout>
+
+<Callout type="info">
+Never commit API keys to version control. Always load them from environment variables or a secrets manager in your application code.
+</Callout>
+
+## Using the Key
+
+Pass the key in the `X-API-KEY` request header on every call to the public API:
+
+```http
+GET /public/v1/app/{app_id}/agents
+X-API-KEY: mattin_...
+```
+
+The key is validated on each request. If it is inactive or does not exist, the API returns `401 Unauthorized`.
+
+## Rate Limiting
+
+The public API rate limit is controlled at the **App level** (not per key) via the **Agent Rate Limit** setting in App Settings → General. When the limit is exceeded, the API returns `429 Too Many Requests`. Set the limit to `0` for unlimited requests.
+
+Response headers on every public API call include:
+
+```
+X-RateLimit-Limit: 100
+X-RateLimit-Remaining: 95
+X-RateLimit-Reset: 1640000000
+```
+
+<Callout type="info">
+Implement exponential backoff in your application when you receive a `429` response. Do not retry immediately.
+</Callout>
+
+## Manage Keys
+
+From **Settings → API Keys**, you can:
+
+| Action | How |
+|---|---|
+| **Deactivate** | Click the pause icon on a key row. The key stops working immediately but is not deleted. |
+| **Reactivate** | Click the play icon to re-enable a deactivated key. |
+| **Rename** | Click the edit icon to change the key's name. The key value does not change. |
+| **Delete** | Click the delete icon and confirm. Any application using the deleted key loses access immediately. |
+
+<Callout type="warn">
+Only App **Administrators** and **Owners** can create, deactivate, rename, or delete API keys. Editors and Viewers can view the key list (masked previews only) but cannot make changes.
+</Callout>
+
+## App Scoping
+
+Each API key is bound to the App it was created in. The public API routes include the App ID in the path (`/public/v1/app/{app_id}/...`) so the platform knows which App to look up resources in:
+
+```
+GET /public/v1/app/{app_id}/agents
+```
+
+A key created in one App cannot be used to access agents or resources in a different App.
+
+<Callout type="info">
+In client white-label deployments, the API Keys settings page may be located under a different menu label as configured in `clientConfig.ts`. The key creation, scoping, and security behavior remain identical.
+</Callout>
+
+## Related
+
+<Cards>
+  <Card title="Apps" href="/workspace/apps">
+    Configure App-level rate limits that govern API key usage
+  </Card>
+  <Card title="Agents" href="/building-agents/agents">
+    Create agents that external applications will call via the API
+  </Card>
+  <Card title="Playground" href="/building-agents/playground">
+    Test agents interactively before integrating them via the API
+  </Card>
+  <Card title="Silos and RAG" href="/knowledge-rag/silos-and-rag">
+    Build knowledge bases that API-accessed agents can search
+  </Card>
+</Cards>

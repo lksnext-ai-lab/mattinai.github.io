@@ -1,0 +1,231 @@
+---
+title: "Media & Multimodal RAG"
+description: "Add audio, video, images, and YouTube links to a Repository. Transcription and visual analysis turn media into searchable chunks in the linked Silo."
+---
+
+A Repository's **Media tab** handles audio and video files separately from uploaded documents. Rather than extracting static text, the pipeline transcribes speech (via OpenAI Whisper) and, when configured, generates visual descriptions of video frames (via Google Gemini). The resulting time-stamped chunks are embedded and stored in the Repository's linked Silo just like any other document content.
+
+Use Media RAG when your knowledge base includes meeting recordings, training videos, product demos, podcasts, or any content where the information lives in the audio or visual track rather than a text file.
+
+## Prerequisites
+
+- A Repository with a linked Silo and an Embedding Service configured (see [Repositories](/knowledge-rag/repositories)).
+- A **Whisper-compatible AI Service** (OpenAI `whisper-1`) set as the Repository's **Transcription Service**. Without this the Repository will not accept media uploads.
+- Optional: a **Google Gemini AI Service** with the `Video Analysis Capable` flag enabled, set as the Repository's **Video Analysis Service**, to activate multimodal (audio + visual) processing.
+
+<Callout type="info">
+Both service fields are configured once at the Repository level — in **App → Repositories → Edit Repository**. Every media file in the Repository uses those services. There is no per-upload service selection.
+</Callout>
+
+## Configure Repository Services
+
+<Steps>
+  <Step>
+  ### Open the Repository form
+  Navigate to **App → Repositories**, click the Repository name, then click **Edit**.
+  </Step>
+  <Step>
+  ### Select a Transcription Service
+  In the **Transcription Service** field, choose an AI Service that uses OpenAI's Whisper model. This is required for any media processing.
+  </Step>
+  <Step>
+  ### Select a Video Analysis Service (optional)
+  In the **Video Analysis Service** field, choose a Google or Google Cloud AI Service that has the `Video Analysis Capable` flag enabled. When this field is set, every video uploaded to the Repository will be processed in multimodal mode — producing both audio chunks and visual description chunks. Leave empty for audio-only processing.
+  </Step>
+  <Step>
+  ### Save
+  Click **Save**. The new service settings apply to all subsequent media uploads in this Repository.
+  </Step>
+</Steps>
+
+## Add Media Files
+
+<Steps>
+  <Step>
+  ### Open the Media tab
+  Navigate to **App → Repositories**, click the Repository, then click the **Media** tab.
+  </Step>
+  <Step>
+  ### Upload a file or add a YouTube URL
+  Click **Add Media**. In the modal, choose either **Upload File** or **YouTube URL**:
+  - **Upload File** — drag and drop or select audio or video files. Multiple files can be uploaded at once.
+  - **YouTube URL** — paste a YouTube link. The backend downloads the video with `yt-dlp` before processing begins.
+  </Step>
+  <Step>
+  ### Set optional parameters
+  Configure chunking and language before submitting:
+
+  | Parameter | Default | Description |
+  |-----------|---------|-------------|
+  | **Language** | Auto-detect | Force a specific transcription language (e.g. `en`, `es`). Leave empty for automatic detection. |
+  | **Min chunk duration** | 30 s | Minimum length of each time-window chunk in seconds. |
+  | **Max chunk duration** | 120 s | Maximum length of each time-window chunk in seconds. |
+  | **Chunk overlap** | 5 s | Overlap between consecutive chunks in seconds. |
+  </Step>
+  <Step>
+  ### Submit and monitor status
+  Click **Upload** (or **Add**). The item appears in the Media tab with a status badge. The UI polls every 3 seconds and updates the badge automatically.
+  </Step>
+</Steps>
+
+## Processing Pipeline
+
+When a media item is submitted, the backend runs a background task through the following stages:
+
+```
+Input (file upload or YouTube URL)
+      │
+      ├── YouTube? → Download with yt-dlp     status: downloading
+      │
+      ├── Extract audio (pydub / ffmpeg)       status: processing
+      │
+      ├── Transcribe with Whisper              status: transcribing
+      │
+      ├── Segment into time-window chunks
+      │
+      ├── Video Analysis Service configured?
+      │     ├── No  → audio-only chunks
+      │     └── Yes → send video to Gemini    status: analyzing_video
+      │                 │
+      │                 └── split into audio + visual chunks
+      │
+      └── Embed all chunks → Silo             status: indexing → ready
+```
+
+<Callout type="info">
+If video analysis fails (unsupported format, API error, etc.) the pipeline continues with audio-only chunks. The item is still marked `ready` and a warning is logged.
+</Callout>
+
+## Processing Modes
+
+<Tabs items={["Basic (audio only)", "Multimodal (audio + visual)"]}>
+  <Tab value="Basic (audio only)">
+  **Trigger**: Repository has no Video Analysis Service set.
+
+  For each time window the pipeline produces one chunk:
+
+  ```json
+  {
+    "text": "And here we can see the microservices architecture...",
+    "start_time": 30.0,
+    "end_time": 60.0,
+    "chunk_type": "audio",
+    "chunk_index": 1
+  }
+  ```
+  </Tab>
+  <Tab value="Multimodal (audio + visual)">
+  **Trigger**: Repository has a Video Analysis Service (Google or GoogleCloud provider with `supports_video` enabled).
+
+  For each time window the pipeline produces two independent chunks:
+
+  ```json
+  {
+    "text": "And here we can see the microservices architecture...",
+    "start_time": 30.0,
+    "end_time": 60.0,
+    "chunk_type": "audio",
+    "chunk_index": 1
+  }
+  ```
+
+  ```json
+  {
+    "text": "Slide showing a microservices architecture diagram with three boxes labeled API Gateway, Auth Service, and User Service.",
+    "start_time": 30.0,
+    "end_time": 60.0,
+    "chunk_type": "visual",
+    "chunk_index": 2
+  }
+  ```
+
+  Both chunks share the same `start_time`/`end_time` and are embedded independently. The standard similarity search in the Silo retrieves whichever modality best matches the query — no special configuration is needed.
+  </Tab>
+</Tabs>
+
+## Media Status Reference
+
+| Status | Meaning |
+|--------|---------|
+| `pending` | Queued, not yet started |
+| `downloading` | Fetching a YouTube video (YouTube sources only) |
+| `processing` | Extracting audio from video |
+| `transcribing` | Sending audio to Whisper |
+| `analyzing_video` | Sending video to Gemini for visual descriptions (multimodal only) |
+| `indexing` | Embedding chunks and writing to the Silo's vector store |
+| `ready` | All chunks are indexed and searchable |
+| `error` | Processing failed — see the error message on the item row |
+
+## Supported Formats
+
+| Category | Formats |
+|----------|---------|
+| **Video** | `.mp4`, `.mov`, `.avi`, `.mkv`, `.webm`, `.flv`, `.wmv`, `.mpeg`, `.mpg` |
+| **Audio** | `.mp3`, `.wav`, `.m4a`, `.aac`, `.ogg`, `.flac`, `.wma` |
+| **YouTube** | Any publicly accessible YouTube URL |
+
+## Chunk Metadata in the Vector Store
+
+All media-derived chunks stored in the Silo carry the following metadata fields:
+
+| Field | Example | Description |
+|-------|---------|-------------|
+| `content_type` | `media_chunk` | Always `media_chunk` for media-derived content |
+| `chunk_type` | `audio` / `visual` | Modality of this chunk |
+| `start_time` | `30.0` | Start of the time window (seconds) |
+| `end_time` | `60.0` | End of the time window (seconds) |
+| `media_id` | `42` | ID of the source Media record |
+| `repository_id` | `7` | Parent Repository ID |
+| `name` | `tutorial.mp4` | Original file name |
+| `file_type` | `.mp4` | File extension |
+| `source_type` | `youtube` | `upload` or `youtube` |
+| `source_url` | `https://...` | YouTube URL if applicable |
+| `language` | `en` | Detected or forced language |
+| `media_duration` | `620.5` | Total duration of the source file (seconds) |
+
+## Video Analysis Providers
+
+Visual analysis is only available for Google Gemini models. The `Video Analysis Capable` checkbox is only shown in the AI Service form when a Google provider is selected.
+
+| Provider | How video is sent |
+|----------|------------------|
+| **Google** (Gemini Developer API) | Uploaded to Google Files API; model receives a file URI |
+| **GoogleCloud** (Vertex AI) | Sent inline as base64 in the request |
+
+Recommended models: `gemini-2.0-flash` (fast, cost-effective), `gemini-2.5-flash`, `gemini-2.5-pro` (complex visual content).
+
+## Public API (media endpoints)
+
+Media can also be managed via the public API using an App API key.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/public/v1/app/{app_id}/repositories/{repo_id}/media` | List media items, optionally filtered by `folder_id` |
+| `POST` | `/public/v1/app/{app_id}/repositories/{repo_id}/media` | Upload audio/video files (`multipart/form-data`) |
+| `POST` | `/public/v1/app/{app_id}/repositories/{repo_id}/media/youtube` | Add a YouTube URL |
+| `GET` | `/public/v1/app/{app_id}/repositories/{repo_id}/media/{media_id}` | Get status and details of one item |
+| `POST` | `/public/v1/app/{app_id}/repositories/{repo_id}/media/{media_id}/move` | Move item to a folder |
+| `DELETE` | `/public/v1/app/{app_id}/repositories/{repo_id}/media/{media_id}` | Delete item and all derived chunks |
+
+All endpoints require the `X-API-KEY` header. `app_id` is a path parameter in the URL.
+
+<Callout type="warn">
+Deleting a media item removes the file from storage and all its vector chunks from the Silo. This cannot be undone.
+</Callout>
+
+## Related
+
+<Cards>
+  <Card title="Repositories" href="/knowledge-rag/repositories">
+    Upload documents and manage the Repository that hosts Media items
+  </Card>
+  <Card title="Silos and RAG" href="/knowledge-rag/silos-and-rag">
+    The Silo that stores media-derived chunks and serves agent queries
+  </Card>
+  <Card title="AI Services" href="/workspace/ai-services">
+    Configure the Transcription Service and Video Analysis Service
+  </Card>
+  <Card title="Embedding Services" href="/workspace/embedding-services">
+    Configure the embedding model used to vectorize chunks
+  </Card>
+</Cards>

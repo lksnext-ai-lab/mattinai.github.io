@@ -1,0 +1,7032 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Mattin AI — Public API",
+    "version": "0.2.37",
+    "description": "Public API for external applications. Authenticate with the X-API-KEY header (an App-scoped API key). Requests are rate-limited per App."
+  },
+  "servers": [
+    {
+      "url": "https://your-instance.example.com",
+      "description": "Replace with your Mattin AI instance host"
+    }
+  ],
+  "paths": {
+    "/public/v1/app/{app_id}/agents/": {
+      "get": {
+        "tags": [
+          "Agents"
+        ],
+        "summary": "List all agents in app",
+        "description": "List all agents available in the specified app.",
+        "operationId": "list_agents_public_v1_app__app_id__agents__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicAgentsResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Agents"
+        ],
+        "summary": "Create a new agent",
+        "description": "Create a new agent in the specified app.",
+        "operationId": "create_agent_public_v1_app__app_id__agents__post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateAgentRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicAgentResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/agents/{agent_id}": {
+      "get": {
+        "tags": [
+          "Agents"
+        ],
+        "summary": "Get agent by ID",
+        "description": "Get a specific agent by ID.",
+        "operationId": "get_agent_public_v1_app__app_id__agents__agent_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicAgentResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Agents"
+        ],
+        "summary": "Update an existing agent",
+        "description": "Update an existing agent.",
+        "operationId": "update_agent_public_v1_app__app_id__agents__agent_id__put",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAgentRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicAgentResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Agents"
+        ],
+        "summary": "Delete an agent",
+        "description": "Delete an agent from the specified app.",
+        "operationId": "delete_agent_public_v1_app__app_id__agents__agent_id__delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/agents/ocr": {
+      "post": {
+        "tags": [
+          "Agents"
+        ],
+        "summary": "Create a new OCR agent",
+        "description": "Create a new OCR agent in the specified app.",
+        "operationId": "create_ocr_agent_public_v1_app__app_id__agents_ocr_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOCRAgentRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicAgentResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/agents/ocr/{agent_id}": {
+      "put": {
+        "tags": [
+          "Agents"
+        ],
+        "summary": "Update an existing OCR agent",
+        "description": "Update an existing OCR agent.",
+        "operationId": "update_ocr_agent_public_v1_app__app_id__agents_ocr__agent_id__put",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOCRAgentRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicAgentResponseSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "OCR Agent not found"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/chat/{agent_id}/call": {
+      "post": {
+        "tags": [
+          "Agent Chat"
+        ],
+        "summary": "Call agent",
+        "description": "Call an agent for chat completion.\n\nSupports text messages and file attachments. Files can be:\n- Uploaded directly with this request\n- Previously attached using /files/{agent_id}/attach-file\n\n**Behavior for agents WITH memory:**\n- If conversation_id is not provided, a new conversation is auto-created\n- The conversation_id is returned in the response - use it for subsequent calls\n- Files are always associated with the conversation\n\n**Behavior for agents WITHOUT memory:**\n- conversation_id is optional and used only for file grouping\n- Each call is independent (no memory persistence)\n\n**File handling:**\n- New files uploaded with this request are automatically persisted\n- If file_references is not provided, ALL attached files are included\n- If file_references is provided, only those specific files are included\n\n**Supported file types:**\n- PDF files (.pdf): Text is extracted automatically\n- Text files (.txt, .md, .json, .csv): Content is read directly\n- Images (.jpg, .jpeg, .png, .gif, .bmp): Sent to vision models\n- Documents (.doc, .docx): Basic support",
+        "operationId": "call_agent_public_v1_app__app_id__chat__agent_id__call_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_call_agent_public_v1_app__app_id__chat__agent_id__call_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentResponseSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Agent execution failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Agent execution failed"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/chat/{agent_id}/call/stream": {
+      "post": {
+        "tags": [
+          "Agent Chat"
+        ],
+        "summary": "Call agent (streaming)",
+        "description": "Call an agent with Server-Sent Events streaming response.\n\nReturns a stream of SSE events (Content-Type: text/event-stream).\nEach event is a JSON object with \"type\" and \"data\" fields:\n- **metadata**: Emitted first with conversation_id and agent info\n- **token**: Partial LLM text output\n- **tool_start**: A tool invocation has started\n- **tool_end**: A tool invocation has finished\n- **thinking**: Human-readable status message\n- **done**: Stream complete with full response and generated files\n- **error**: An error occurred\n\nSupports the same file handling and conversation features as the\nnon-streaming `/call` endpoint.",
+        "operationId": "call_agent_stream_public_v1_app__app_id__chat__agent_id__call_stream_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_call_agent_stream_public_v1_app__app_id__chat__agent_id__call_stream_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "500": {
+            "description": "Agent execution failed",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Agent execution failed"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/chat/{agent_id}/reset": {
+      "post": {
+        "tags": [
+          "Agent Chat"
+        ],
+        "summary": "Reset conversation",
+        "description": "Reset the conversation state for an agent.\n\nThis will clear the conversation history and any attached files.\nIf conversation_id is provided, resets that specific conversation.",
+        "operationId": "reset_conversation_public_v1_app__app_id__chat__agent_id__reset_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Agent Id"
+            }
+          },
+          {
+            "name": "conversation_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional conversation ID to reset",
+              "title": "Conversation Id"
+            },
+            "description": "Optional conversation ID to reset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/routers__public__v1__schemas__MessageResponseSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to reset conversation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Failed to reset conversation"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/chat/{agent_id}/conversations": {
+      "post": {
+        "tags": [
+          "Conversations"
+        ],
+        "summary": "Create a new conversation",
+        "description": "Create a new conversation for an agent.\n\nUseful for explicitly managing conversation sessions.\nThe returned conversation_id can be used in subsequent chat calls.",
+        "operationId": "create_conversation_public_v1_app__app_id__chat__agent_id__conversations_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateConversationRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicConversationSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to create conversation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Failed to create conversation"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Conversations"
+        ],
+        "summary": "List conversations",
+        "description": "List all conversations for an agent.\n\nReturns a paginated list of conversations ordered by most recent first.",
+        "operationId": "list_conversations_public_v1_app__app_id__chat__agent_id__conversations_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Agent Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Maximum number of results",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "Maximum number of results"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Pagination offset",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Pagination offset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicConversationListResponseSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to list conversations",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Failed to list conversations"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/chat/{agent_id}/conversations/{conversation_id}": {
+      "get": {
+        "tags": [
+          "Conversations"
+        ],
+        "summary": "Get conversation with history",
+        "description": "Get a conversation with its complete message history.\n\nReturns conversation metadata and all messages exchanged.",
+        "operationId": "get_conversation_with_history_public_v1_app__app_id__chat__agent_id__conversations__conversation_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Agent Id"
+            }
+          },
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicConversationWithHistorySchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Conversation not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Conversation not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to get conversation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Failed to get conversation"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Conversations"
+        ],
+        "summary": "Delete a conversation",
+        "description": "Delete a conversation and its associated chat history.\n\nThis action is irreversible.",
+        "operationId": "delete_conversation_public_v1_app__app_id__chat__agent_id__conversations__conversation_id__delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Agent Id"
+            }
+          },
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Conversation Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/routers__public__v1__schemas__MessageResponseSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Conversation not found",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Conversation not found"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to delete conversation",
+            "content": {
+              "application/json": {
+                "example": {
+                  "detail": "Failed to delete conversation"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/files/{agent_id}/attach-file": {
+      "post": {
+        "tags": [
+          "File Operations"
+        ],
+        "summary": "Attach file for chat",
+        "description": "Attach a file to an agent for chat context.\n\nThe file will be processed and stored for use in subsequent chat calls.\nSupported file types: PDF, TXT, MD, JSON, CSV, images (JPG, PNG, etc.)\n\n**For agents with memory:**\n- If conversation_id is provided, the file is associated with that specific conversation\n- If conversation_id is NOT provided, a new conversation is auto-created\n- The conversation_id is returned in the response - use it for subsequent calls\n\n**For agents without memory:**\n- conversation_id is optional (files are session-global)",
+        "operationId": "attach_file_public_v1_app__app_id__files__agent_id__attach_file_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_attach_file_public_v1_app__app_id__files__agent_id__attach_file_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttachFileResponseSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to attach file"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/files/{agent_id}/detach-file/{file_id}": {
+      "delete": {
+        "tags": [
+          "File Operations"
+        ],
+        "summary": "Remove attached file",
+        "description": "Remove an attached file from an agent's context.\n\nThe file will no longer be included in subsequent chat calls.\n\n**For agents with memory:**\n- If conversation_id is provided, removes the file from that specific conversation\n- If conversation_id is not provided, removes from the global session",
+        "operationId": "detach_file_public_v1_app__app_id__files__agent_id__detach_file__file_id__delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Agent Id"
+            }
+          },
+          {
+            "name": "file_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "File Id"
+            }
+          },
+          {
+            "name": "conversation_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional conversation ID to scope file removal",
+              "title": "Conversation Id"
+            },
+            "description": "Optional conversation ID to scope file removal"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DetachFileResponseSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to detach file"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/files/{agent_id}/attached-files": {
+      "get": {
+        "tags": [
+          "File Operations"
+        ],
+        "summary": "List attached files",
+        "description": "List all files attached to an agent for the current session.\n\nReturns a list of files that will be included in chat context.\n\n**For agents with memory:**\n- If conversation_id is provided, returns only files for that conversation\n- If conversation_id is not provided, returns files from the global session",
+        "operationId": "list_attached_files_public_v1_app__app_id__files__agent_id__attached_files_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Agent Id"
+            }
+          },
+          {
+            "name": "conversation_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional conversation ID to filter files",
+              "title": "Conversation Id"
+            },
+            "description": "Optional conversation ID to filter files"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ListFilesResponseSchema"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to list files"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/files/{agent_id}/files/{file_id}/download": {
+      "get": {
+        "tags": [
+          "File Operations"
+        ],
+        "summary": "Download a file",
+        "description": "Get a signed download URL for an attached file.\n\nReturns a URL that can be used to download the file directly.\nThe URL is signed and time-limited for security.",
+        "operationId": "download_file_public_v1_app__app_id__files__agent_id__files__file_id__download_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Agent Id"
+            }
+          },
+          {
+            "name": "file_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "File Id"
+            }
+          },
+          {
+            "name": "conversation_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Optional conversation ID to scope file lookup",
+              "title": "Conversation Id"
+            },
+            "description": "Optional conversation ID to scope file lookup"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileDownloadResponseSchema"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "File not found"
+          },
+          "500": {
+            "description": "Failed to generate download URL"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/ocr/{agent_id}/process": {
+      "post": {
+        "tags": [
+          "OCR"
+        ],
+        "summary": "Process OCR",
+        "description": "Process OCR on a PDF file using the specified agent.",
+        "operationId": "process_ocr_public_v1_app__app_id__ocr__agent_id__process_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_process_ocr_public_v1_app__app_id__ocr__agent_id__process_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/routers__public__v1__schemas__OCRResponseSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Only PDF files are supported"
+          },
+          "500": {
+            "description": "OCR processing failed"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/repositories/": {
+      "get": {
+        "tags": [
+          "Repositories"
+        ],
+        "summary": "Get all repositories in app",
+        "description": "Get all repositories in the specified app.",
+        "operationId": "get_all_repos_public_v1_app__app_id__repositories__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepositoriesResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Repositories"
+        ],
+        "summary": "Create repository",
+        "description": "Create a new repository.",
+        "operationId": "create_repo_public_v1_app__app_id__repositories__post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateRepositoryRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepositoryResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/repositories/{repo_id}": {
+      "get": {
+        "tags": [
+          "Repositories"
+        ],
+        "summary": "Get repository by id",
+        "description": "Get a specific repository by ID.",
+        "operationId": "get_repo_by_id_public_v1_app__app_id__repositories__repo_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Repo Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepositoryResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Repositories"
+        ],
+        "summary": "Update repository",
+        "description": "Update an existing repository.",
+        "operationId": "update_repo_public_v1_app__app_id__repositories__repo_id__put",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Repo Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRepositoryRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RepositoryResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Repositories"
+        ],
+        "summary": "Delete repository",
+        "description": "Delete a repository and all its resources.",
+        "operationId": "delete_repo_public_v1_app__app_id__repositories__repo_id__delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Repo Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/repositories/{repo_id}/docs/find": {
+      "post": {
+        "tags": [
+          "Repositories"
+        ],
+        "summary": "Find docs in repository",
+        "description": "Find documents in a repository's silo collection.",
+        "operationId": "find_docs_in_repository_public_v1_app__app_id__repositories__repo_id__docs_find_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Repo Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/routers__public__v1__schemas__SiloSearchSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocsResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/repositories/{repo_id}/media": {
+      "get": {
+        "tags": [
+          "Media"
+        ],
+        "summary": "List media in repository",
+        "description": "List all media (video/audio) in a repository, optionally filtered by folder.",
+        "operationId": "list_media_public_v1_app__app_id__repositories__repo_id__media_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Repo Id"
+            }
+          },
+          {
+            "name": "folder_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Folder Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaListResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Media"
+        ],
+        "summary": "Upload media files",
+        "description": "Upload video/audio files for transcription and indexing.\nThe transcription and video analysis services are taken from the repository configuration.\n\nSupported formats:\n- Video: mp4, mov, avi, mkv, webm, flv, wmv, mpeg, mpg\n- Audio: mp3, wav, m4a, aac, ogg, flac, wma",
+        "operationId": "upload_media_public_v1_app__app_id__repositories__repo_id__media_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Repo Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_media_public_v1_app__app_id__repositories__repo_id__media_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaUploadResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/repositories/{repo_id}/media/youtube": {
+      "post": {
+        "tags": [
+          "Media"
+        ],
+        "summary": "Add YouTube video",
+        "description": "Add a YouTube video for transcription and indexing.\n\nThe video will be downloaded, audio extracted, transcribed, chunked, and indexed for RAG queries.",
+        "operationId": "add_youtube_video_public_v1_app__app_id__repositories__repo_id__media_youtube_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Repo Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/YouTubeRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/repositories/{repo_id}/media/{media_id}": {
+      "get": {
+        "tags": [
+          "Media"
+        ],
+        "summary": "Get media status",
+        "description": "Get status and details of a specific media item.",
+        "operationId": "get_media_status_public_v1_app__app_id__repositories__repo_id__media__media_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Repo Id"
+            }
+          },
+          {
+            "name": "media_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Media Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MediaResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Media"
+        ],
+        "summary": "Delete media",
+        "description": "Delete a media file and all derived data (chunks, transcripts, embeddings).",
+        "operationId": "delete_media_public_v1_app__app_id__repositories__repo_id__media__media_id__delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Repo Id"
+            }
+          },
+          {
+            "name": "media_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Media Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/routers__public__v1__schemas__MessageResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/repositories/{repo_id}/media/{media_id}/move": {
+      "post": {
+        "tags": [
+          "Media"
+        ],
+        "summary": "Move media to folder",
+        "description": "Move a media item to a different folder within the same repository.",
+        "operationId": "move_media_public_v1_app__app_id__repositories__repo_id__media__media_id__move_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Repo Id"
+            }
+          },
+          {
+            "name": "media_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Media Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/x-www-form-urlencoded": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_move_media_public_v1_app__app_id__repositories__repo_id__media__media_id__move_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/routers__public__v1__schemas__MessageResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/resources/{repo_id}": {
+      "get": {
+        "tags": [
+          "Resources"
+        ],
+        "summary": "Get all resources in repository",
+        "description": "Get all resources in a repository.",
+        "operationId": "get_all_resources_public_v1_app__app_id__resources__repo_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Repo Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ResourceListResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Resources"
+        ],
+        "summary": "Upload resources to repository",
+        "description": "Upload multiple resources to a repository. Optionally specify folder_id to upload to a specific folder.",
+        "operationId": "create_multiple_resources_public_v1_app__app_id__resources__repo_id__post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Repo Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_create_multiple_resources_public_v1_app__app_id__resources__repo_id__post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MultipleResourceResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/resources/{repo_id}/{resource_id}": {
+      "delete": {
+        "tags": [
+          "Resources"
+        ],
+        "summary": "Delete resource",
+        "description": "Delete a resource from a repository.",
+        "operationId": "delete_resource_public_v1_app__app_id__resources__repo_id___resource_id__delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Repo Id"
+            }
+          },
+          {
+            "name": "resource_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Resource Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/routers__public__v1__schemas__MessageResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/resources/{repo_id}/{resource_id}/download": {
+      "get": {
+        "tags": [
+          "Resources"
+        ],
+        "summary": "Download resource",
+        "description": "Download a resource file from a repository.",
+        "operationId": "download_resource_public_v1_app__app_id__resources__repo_id___resource_id__download_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "repo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Repo Id"
+            }
+          },
+          {
+            "name": "resource_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Resource Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/silos/": {
+      "post": {
+        "tags": [
+          "Silos"
+        ],
+        "summary": "Create new silo",
+        "description": "Create a new silo/collection.",
+        "operationId": "create_silo_public_v1_app__app_id__silos__post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSiloSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicSiloResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "Silos"
+        ],
+        "summary": "List all silos",
+        "description": "List all silos for the app.",
+        "operationId": "list_silos_public_v1_app__app_id__silos__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicSilosResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/silos/{silo_id}": {
+      "get": {
+        "tags": [
+          "Silos"
+        ],
+        "summary": "Get silo details",
+        "description": "Get silo details.",
+        "operationId": "get_silo_public_v1_app__app_id__silos__silo_id__get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "silo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Silo Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicSiloResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Silos"
+        ],
+        "summary": "Update silo properties",
+        "description": "Update silo properties. Note: vector_db_type and embedding_service_id cannot be changed after creation.",
+        "operationId": "update_silo_public_v1_app__app_id__silos__silo_id__put",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "silo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Silo Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSiloSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicSiloResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Silos"
+        ],
+        "summary": "Delete silo and all contents",
+        "description": "Delete silo and all contents.",
+        "operationId": "delete_silo_public_v1_app__app_id__silos__silo_id__delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "silo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Silo Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/silos/{silo_id}/search": {
+      "post": {
+        "tags": [
+          "Silos"
+        ],
+        "summary": "Search documents in silo",
+        "description": "Search for documents in a silo using semantic search with optional metadata filtering.",
+        "operationId": "search_silo_public_v1_app__app_id__silos__silo_id__search_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "silo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Silo Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/schemas__silo_schemas__SiloSearchSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PublicSiloSearchResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/silos/{silo_id}/docs": {
+      "get": {
+        "tags": [
+          "Silos"
+        ],
+        "summary": "Count docs in silo",
+        "description": "Count documents in a silo.",
+        "operationId": "count_docs_in_silo_public_v1_app__app_id__silos__silo_id__docs_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "silo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Silo Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CountResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/silos/{silo_id}/docs/index": {
+      "post": {
+        "tags": [
+          "Silos"
+        ],
+        "summary": "Index content",
+        "description": "Index a single document in a silo.",
+        "operationId": "index_single_document_public_v1_app__app_id__silos__silo_id__docs_index_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "silo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Silo Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SingleDocumentIndexSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/routers__public__v1__schemas__MessageResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/silos/{silo_id}/docs/multiple-index": {
+      "post": {
+        "tags": [
+          "Silos"
+        ],
+        "summary": "Index multiple documents",
+        "description": "Index multiple documents in a silo.",
+        "operationId": "index_multiple_documents_public_v1_app__app_id__silos__silo_id__docs_multiple_index_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "silo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Silo Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MultipleDocumentIndexSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/routers__public__v1__schemas__MessageResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/silos/{silo_id}/docs/delete": {
+      "delete": {
+        "tags": [
+          "Silos"
+        ],
+        "summary": "Delete docs in collection",
+        "description": "Delete documents in a silo collection by IDs.",
+        "operationId": "delete_docs_in_collection_public_v1_app__app_id__silos__silo_id__docs_delete_delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "silo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Silo Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteDocsRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/routers__public__v1__schemas__MessageResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/silos/{silo_id}/docs/delete-by-metadata": {
+      "delete": {
+        "tags": [
+          "Silos"
+        ],
+        "summary": "Delete docs by metadata filter",
+        "description": "Delete documents by metadata filter (MongoDB-style operators).",
+        "operationId": "delete_docs_by_metadata_public_v1_app__app_id__silos__silo_id__docs_delete_by_metadata_delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "silo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Silo Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DeleteByMetadataRequestSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/routers__public__v1__schemas__MessageResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/silos/{silo_id}/docs/delete/all": {
+      "delete": {
+        "tags": [
+          "Silos"
+        ],
+        "summary": "Delete all docs in collection",
+        "description": "Delete all documents in a silo collection.",
+        "operationId": "delete_all_docs_in_collection_public_v1_app__app_id__silos__silo_id__docs_delete_all_delete",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "silo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Silo Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/routers__public__v1__schemas__MessageResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/silos/{silo_id}/docs/find": {
+      "post": {
+        "tags": [
+          "Silos"
+        ],
+        "summary": "Find docs in collection",
+        "description": "Find documents in a silo collection.",
+        "operationId": "find_docs_in_collection_public_v1_app__app_id__silos__silo_id__docs_find_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "silo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Silo Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/schemas__silo_schemas__SiloSearchSchema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocsResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/silos/{silo_id}/docs/index-file": {
+      "post": {
+        "tags": [
+          "Silos"
+        ],
+        "summary": "Index file content",
+        "description": "Index file content in a silo.",
+        "operationId": "index_file_document_public_v1_app__app_id__silos__silo_id__docs_index_file_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          },
+          {
+            "name": "silo_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Silo Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_index_file_document_public_v1_app__app_id__silos__silo_id__docs_index_file_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileIndexResponseSchema"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/openai/v1/models": {
+      "get": {
+        "tags": [
+          "OpenAI Compatible API"
+        ],
+        "summary": "List available models",
+        "description": "Lists the currently available memoryless agents that can be used with the OpenAI-compatible chat completions endpoint.",
+        "operationId": "list_models_public_v1_app__app_id__openai_v1_models_get",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenAIModelListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/public/v1/app/{app_id}/openai/v1/chat/completions": {
+      "post": {
+        "tags": [
+          "OpenAI Compatible API"
+        ],
+        "summary": "Create chat completion",
+        "description": "Creates a model response for the given chat conversation. Supports streaming with `stream=True`. Only works with memoryless agents.",
+        "operationId": "chat_completions_public_v1_app__app_id__openai_v1_chat_completions_post",
+        "security": [
+          {
+            "APIKeyHeader": []
+          },
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "app_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "App Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OpenAIChatCompletionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful chat completion response. Returns standard JSON schema if stream is false, or an SSE event stream if stream is true.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OpenAIChatCompletionResponse"
+                }
+              },
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AgentResponseSchema": {
+        "properties": {
+          "response": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "additionalProperties": true,
+                "type": "object"
+              }
+            ],
+            "title": "Response"
+          },
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversation Id"
+          },
+          "usage": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Usage"
+          }
+        },
+        "type": "object",
+        "required": [
+          "response"
+        ],
+        "title": "AgentResponseSchema",
+        "description": "Agent response - supports both string responses and structured JSON from output parsers"
+      },
+      "AttachFileResponseSchema": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "file_id": {
+            "type": "string",
+            "title": "File Id"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename"
+          },
+          "file_type": {
+            "type": "string",
+            "title": "File Type"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversation Id"
+          },
+          "file_size_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Size Bytes"
+          },
+          "file_size_display": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Size Display"
+          },
+          "processing_status": {
+            "type": "string",
+            "title": "Processing Status",
+            "default": "ready"
+          },
+          "content_preview": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Preview"
+          },
+          "has_extractable_content": {
+            "type": "boolean",
+            "title": "Has Extractable Content",
+            "default": false
+          },
+          "mime_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mime Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "file_id",
+          "filename",
+          "file_type",
+          "message"
+        ],
+        "title": "AttachFileResponseSchema",
+        "description": "File attachment response with visual feedback data"
+      },
+      "Body_attach_file_public_v1_app__app_id__files__agent_id__attach_file_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          },
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversation Id",
+            "description": "Optional conversation ID for memory-enabled agents. If not provided for a memory-enabled agent, a new conversation will be created."
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_attach_file_public_v1_app__app_id__files__agent_id__attach_file_post"
+      },
+      "Body_call_agent_public_v1_app__app_id__chat__agent_id__call_post": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "The user message to send to the agent"
+          },
+          "files": {
+            "items": {
+              "type": "string",
+              "contentMediaType": "application/octet-stream"
+            },
+            "type": "array",
+            "title": "Files",
+            "description": "Optional files to attach (images, PDFs, text files)"
+          },
+          "file_references": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File References",
+            "description": "JSON array of existing file_ids to include. If not provided, all files are included."
+          },
+          "search_params": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Search Params",
+            "description": "JSON object with search parameters for silo-based agents"
+          },
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversation Id",
+            "description": "Optional conversation ID to continue existing conversation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "Body_call_agent_public_v1_app__app_id__chat__agent_id__call_post"
+      },
+      "Body_call_agent_stream_public_v1_app__app_id__chat__agent_id__call_stream_post": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "The user message to send to the agent"
+          },
+          "files": {
+            "items": {
+              "type": "string",
+              "contentMediaType": "application/octet-stream"
+            },
+            "type": "array",
+            "title": "Files",
+            "description": "Optional files to attach"
+          },
+          "file_references": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File References",
+            "description": "JSON array of existing file_ids to include"
+          },
+          "search_params": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Search Params",
+            "description": "JSON object with search parameters"
+          },
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversation Id",
+            "description": "Optional conversation ID to continue"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "Body_call_agent_stream_public_v1_app__app_id__chat__agent_id__call_stream_post"
+      },
+      "Body_create_multiple_resources_public_v1_app__app_id__resources__repo_id__post": {
+        "properties": {
+          "files": {
+            "items": {
+              "type": "string",
+              "contentMediaType": "application/octet-stream"
+            },
+            "type": "array",
+            "title": "Files"
+          },
+          "folder_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Folder Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "title": "Body_create_multiple_resources_public_v1_app__app_id__resources__repo_id__post"
+      },
+      "Body_index_file_document_public_v1_app__app_id__silos__silo_id__docs_index_file_post": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "File"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_index_file_document_public_v1_app__app_id__silos__silo_id__docs_index_file_post"
+      },
+      "Body_move_media_public_v1_app__app_id__repositories__repo_id__media__media_id__move_post": {
+        "properties": {
+          "new_folder_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "New Folder Id"
+          }
+        },
+        "type": "object",
+        "title": "Body_move_media_public_v1_app__app_id__repositories__repo_id__media__media_id__move_post"
+      },
+      "Body_process_ocr_public_v1_app__app_id__ocr__agent_id__process_post": {
+        "properties": {
+          "pdf": {
+            "type": "string",
+            "contentMediaType": "application/octet-stream",
+            "title": "Pdf"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pdf"
+        ],
+        "title": "Body_process_ocr_public_v1_app__app_id__ocr__agent_id__process_post"
+      },
+      "Body_upload_media_public_v1_app__app_id__repositories__repo_id__media_post": {
+        "properties": {
+          "files": {
+            "items": {
+              "type": "string",
+              "contentMediaType": "application/octet-stream"
+            },
+            "type": "array",
+            "title": "Files"
+          },
+          "folder_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Folder Id"
+          },
+          "forced_language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forced Language"
+          },
+          "chunk_min_duration": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chunk Min Duration"
+          },
+          "chunk_max_duration": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chunk Max Duration"
+          },
+          "chunk_overlap": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chunk Overlap"
+          }
+        },
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "title": "Body_upload_media_public_v1_app__app_id__repositories__repo_id__media_post"
+      },
+      "ContentPartFile": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "file",
+            "title": "Type"
+          },
+          "file": {
+            "$ref": "#/components/schemas/FileData"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "file"
+        ],
+        "title": "ContentPartFile"
+      },
+      "ContentPartImageUrl": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "image_url",
+            "title": "Type"
+          },
+          "image_url": {
+            "$ref": "#/components/schemas/ImageUrlDetail"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "image_url"
+        ],
+        "title": "ContentPartImageUrl"
+      },
+      "ContentPartInputAudio": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "input_audio",
+            "title": "Type"
+          },
+          "input_audio": {
+            "$ref": "#/components/schemas/InputAudioData"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "input_audio"
+        ],
+        "title": "ContentPartInputAudio"
+      },
+      "ContentPartText": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "text",
+            "title": "Type"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "text"
+        ],
+        "title": "ContentPartText"
+      },
+      "CountResponseSchema": {
+        "properties": {
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "count"
+        ],
+        "title": "CountResponseSchema",
+        "description": "Count response"
+      },
+      "CreateAgentRequestSchema": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "default": ""
+          },
+          "type": {
+            "type": "string",
+            "const": "agent",
+            "title": "Type",
+            "default": "agent"
+          },
+          "is_tool": {
+            "type": "boolean",
+            "title": "Is Tool",
+            "default": false
+          },
+          "has_memory": {
+            "type": "boolean",
+            "title": "Has Memory",
+            "default": false
+          },
+          "memory_max_messages": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Max Messages",
+            "default": 20
+          },
+          "memory_max_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Max Tokens",
+            "default": 4000
+          },
+          "memory_summarize_threshold": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Summarize Threshold",
+            "default": 20
+          },
+          "system_prompt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "System Prompt",
+            "default": ""
+          },
+          "prompt_template": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Template",
+            "default": ""
+          },
+          "service_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Id"
+          },
+          "silo_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Silo Id"
+          },
+          "output_parser_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Parser Id"
+          },
+          "temperature": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature",
+            "default": 0.7
+          },
+          "tool_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Ids",
+            "default": []
+          },
+          "mcp_config_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mcp Config Ids",
+            "default": []
+          },
+          "skill_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skill Ids",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "CreateAgentRequestSchema",
+        "description": "Schema for creating a new agent via public API"
+      },
+      "CreateConversationRequestSchema": {
+        "properties": {
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "type": "object",
+        "title": "CreateConversationRequestSchema",
+        "description": "Request to create a new conversation"
+      },
+      "CreateOCRAgentRequestSchema": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "default": ""
+          },
+          "is_tool": {
+            "type": "boolean",
+            "title": "Is Tool",
+            "default": false
+          },
+          "has_memory": {
+            "type": "boolean",
+            "title": "Has Memory",
+            "default": false
+          },
+          "memory_max_messages": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Max Messages",
+            "default": 20
+          },
+          "memory_max_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Max Tokens",
+            "default": 4000
+          },
+          "memory_summarize_threshold": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Summarize Threshold",
+            "default": 20
+          },
+          "service_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Id"
+          },
+          "vision_service_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vision Service Id"
+          },
+          "vision_system_prompt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vision System Prompt",
+            "default": ""
+          },
+          "text_system_prompt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text System Prompt",
+            "default": ""
+          },
+          "output_parser_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Parser Id"
+          },
+          "temperature": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature",
+            "default": 0.7
+          },
+          "tool_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Ids",
+            "default": []
+          },
+          "mcp_config_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mcp Config Ids",
+            "default": []
+          },
+          "skill_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skill Ids",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "CreateOCRAgentRequestSchema",
+        "description": "Schema for creating a new OCR agent via public API"
+      },
+      "CreateRepositoryRequestSchema": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "CreateRepositoryRequestSchema",
+        "description": "Create repository request"
+      },
+      "CreateSiloSchema": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          },
+          "output_parser_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Parser Id"
+          },
+          "embedding_service_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Embedding Service Id"
+          },
+          "vector_db_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vector Db Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "CreateSiloSchema",
+        "description": "Schema for creating a new silo (vector_db_type is settable on creation only)"
+      },
+      "DeleteByMetadataRequestSchema": {
+        "properties": {
+          "filter_metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Filter Metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "filter_metadata"
+        ],
+        "title": "DeleteByMetadataRequestSchema",
+        "description": "Schema for deleting documents by metadata filter"
+      },
+      "DeleteDocsRequestSchema": {
+        "properties": {
+          "ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "ids"
+        ],
+        "title": "DeleteDocsRequestSchema",
+        "description": "Schema for deleting documents"
+      },
+      "DetachFileResponseSchema": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "message"
+        ],
+        "title": "DetachFileResponseSchema",
+        "description": "File detachment response"
+      },
+      "DocsResponseSchema": {
+        "properties": {
+          "docs": {
+            "items": {
+              "$ref": "#/components/schemas/DocumentSchema"
+            },
+            "type": "array",
+            "title": "Docs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "docs"
+        ],
+        "title": "DocsResponseSchema",
+        "description": "Documents response"
+      },
+      "DocumentSchema": {
+        "properties": {
+          "page_content": {
+            "type": "string",
+            "title": "Page Content"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "page_content",
+          "metadata"
+        ],
+        "title": "DocumentSchema",
+        "description": "Document schema"
+      },
+      "FileAttachmentSchema": {
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "title": "File Id"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename"
+          },
+          "file_type": {
+            "type": "string",
+            "title": "File Type"
+          },
+          "uploaded_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uploaded At"
+          },
+          "file_size_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Size Bytes"
+          },
+          "file_size_display": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Size Display"
+          },
+          "processing_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Processing Status"
+          },
+          "content_preview": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content Preview"
+          },
+          "has_extractable_content": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Has Extractable Content"
+          },
+          "mime_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mime Type"
+          },
+          "conversation_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conversation Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file_id",
+          "filename",
+          "file_type"
+        ],
+        "title": "FileAttachmentSchema",
+        "description": "File attachment info with visual feedback data"
+      },
+      "FileData": {
+        "properties": {
+          "file_data": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Data"
+          },
+          "file_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Id"
+          },
+          "filename": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filename"
+          }
+        },
+        "type": "object",
+        "title": "FileData"
+      },
+      "FileDownloadResponseSchema": {
+        "properties": {
+          "download_url": {
+            "type": "string",
+            "title": "Download Url"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename"
+          }
+        },
+        "type": "object",
+        "required": [
+          "download_url",
+          "filename"
+        ],
+        "title": "FileDownloadResponseSchema",
+        "description": "File download response with signed URL"
+      },
+      "FileIndexResponseSchema": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "num_documents": {
+            "type": "integer",
+            "title": "Num Documents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "num_documents"
+        ],
+        "title": "FileIndexResponseSchema",
+        "description": "File indexing response"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "ImageUrlDetail": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "auto",
+                  "low",
+                  "high"
+                ]
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail",
+            "default": "auto"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "title": "ImageUrlDetail"
+      },
+      "InputAudioData": {
+        "properties": {
+          "data": {
+            "type": "string",
+            "title": "Data"
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "wav",
+              "mp3"
+            ],
+            "title": "Format"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data",
+          "format"
+        ],
+        "title": "InputAudioData"
+      },
+      "ListFilesResponseSchema": {
+        "properties": {
+          "files": {
+            "items": {
+              "$ref": "#/components/schemas/FileAttachmentSchema"
+            },
+            "type": "array",
+            "title": "Files"
+          },
+          "total_size_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Size Bytes"
+          },
+          "total_size_display": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total Size Display"
+          }
+        },
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "title": "ListFilesResponseSchema",
+        "description": "List of attached files"
+      },
+      "MediaListResponseSchema": {
+        "properties": {
+          "media": {
+            "items": {
+              "$ref": "#/components/schemas/MediaSchema"
+            },
+            "type": "array",
+            "title": "Media"
+          }
+        },
+        "type": "object",
+        "required": [
+          "media"
+        ],
+        "title": "MediaListResponseSchema",
+        "description": "List of media"
+      },
+      "MediaResponseSchema": {
+        "properties": {
+          "media": {
+            "$ref": "#/components/schemas/MediaSchema"
+          }
+        },
+        "type": "object",
+        "required": [
+          "media"
+        ],
+        "title": "MediaResponseSchema",
+        "description": "Single media response"
+      },
+      "MediaSchema": {
+        "properties": {
+          "media_id": {
+            "type": "integer",
+            "title": "Media Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "source_type": {
+            "type": "string",
+            "title": "Source Type"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "duration": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration"
+          },
+          "language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "create_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Create Date"
+          },
+          "processed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Processed At"
+          },
+          "folder_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Folder Id"
+          },
+          "repository_id": {
+            "type": "integer",
+            "title": "Repository Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "media_id",
+          "name",
+          "source_type",
+          "status",
+          "repository_id"
+        ],
+        "title": "MediaSchema",
+        "description": "Public media schema — excludes internal fields like file_path, error_message"
+      },
+      "MediaUploadResponseSchema": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "created_media": {
+            "items": {
+              "$ref": "#/components/schemas/MediaSchema"
+            },
+            "type": "array",
+            "title": "Created Media"
+          },
+          "failed_files": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Failed Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "created_media",
+          "failed_files"
+        ],
+        "title": "MediaUploadResponseSchema",
+        "description": "Media upload response"
+      },
+      "MultipleDocumentIndexSchema": {
+        "properties": {
+          "documents": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Documents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "documents"
+        ],
+        "title": "MultipleDocumentIndexSchema",
+        "description": "Schema for indexing multiple documents"
+      },
+      "MultipleResourceResponseSchema": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "created_resources": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Created Resources"
+          },
+          "failed_files": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Failed Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message",
+          "created_resources",
+          "failed_files"
+        ],
+        "title": "MultipleResourceResponseSchema",
+        "description": "Multiple resource creation response"
+      },
+      "OpenAIChatCompletionRequest": {
+        "properties": {
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/OpenAIMessage"
+            },
+            "type": "array",
+            "title": "Messages"
+          },
+          "stream": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stream",
+            "default": false
+          },
+          "temperature": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature"
+          },
+          "max_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Tokens"
+          },
+          "max_completion_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Completion Tokens"
+          },
+          "top_p": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top P"
+          },
+          "n": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N"
+          },
+          "stop": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stop"
+          },
+          "seed": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seed"
+          },
+          "user": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User"
+          },
+          "safety_identifier": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Safety Identifier"
+          },
+          "frequency_penalty": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Frequency Penalty"
+          },
+          "presence_penalty": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Presence Penalty"
+          },
+          "response_format": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response Format"
+          },
+          "stream_options": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Stream Options"
+          },
+          "logprobs": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Logprobs"
+          },
+          "top_logprobs": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Top Logprobs"
+          },
+          "tools": {
+            "anyOf": [
+              {
+                "items": {},
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tools"
+          },
+          "tool_choice": {
+            "anyOf": [
+              {},
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Choice"
+          }
+        },
+        "type": "object",
+        "required": [
+          "model",
+          "messages"
+        ],
+        "title": "OpenAIChatCompletionRequest"
+      },
+      "OpenAIChatCompletionResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "object": {
+            "type": "string",
+            "title": "Object",
+            "default": "chat.completion"
+          },
+          "created": {
+            "type": "integer",
+            "title": "Created"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model"
+          },
+          "system_fingerprint": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "System Fingerprint"
+          },
+          "response_format": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response Format"
+          },
+          "choices": {
+            "items": {
+              "$ref": "#/components/schemas/OpenAIChoice"
+            },
+            "type": "array",
+            "title": "Choices"
+          },
+          "usage": {
+            "$ref": "#/components/schemas/OpenAITokenUsage"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "created",
+          "model",
+          "choices",
+          "usage"
+        ],
+        "title": "OpenAIChatCompletionResponse"
+      },
+      "OpenAIChoice": {
+        "properties": {
+          "index": {
+            "type": "integer",
+            "title": "Index",
+            "default": 0
+          },
+          "message": {
+            "$ref": "#/components/schemas/OpenAIChoiceMessage"
+          },
+          "finish_reason": {
+            "type": "string",
+            "title": "Finish Reason",
+            "default": "stop"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "OpenAIChoice"
+      },
+      "OpenAIChoiceMessage": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "default": "assistant"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "OpenAIChoiceMessage"
+      },
+      "OpenAIMessage": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "items": {
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/ContentPartText"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ContentPartImageUrl"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ContentPartInputAudio"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ContentPartFile"
+                    }
+                  ],
+                  "discriminator": {
+                    "propertyName": "type",
+                    "mapping": {
+                      "file": "#/components/schemas/ContentPartFile",
+                      "image_url": "#/components/schemas/ContentPartImageUrl",
+                      "input_audio": "#/components/schemas/ContentPartInputAudio",
+                      "text": "#/components/schemas/ContentPartText"
+                    }
+                  }
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Content"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "content"
+        ],
+        "title": "OpenAIMessage"
+      },
+      "OpenAIModel": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "object": {
+            "type": "string",
+            "title": "Object",
+            "default": "model"
+          },
+          "created": {
+            "type": "integer",
+            "title": "Created"
+          },
+          "owned_by": {
+            "type": "string",
+            "title": "Owned By",
+            "default": "mattin-ai"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "created"
+        ],
+        "title": "OpenAIModel"
+      },
+      "OpenAIModelListResponse": {
+        "properties": {
+          "object": {
+            "type": "string",
+            "title": "Object",
+            "default": "list"
+          },
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/OpenAIModel"
+            },
+            "type": "array",
+            "title": "Data"
+          }
+        },
+        "type": "object",
+        "required": [
+          "data"
+        ],
+        "title": "OpenAIModelListResponse"
+      },
+      "OpenAITokenUsage": {
+        "properties": {
+          "prompt_tokens": {
+            "type": "integer",
+            "title": "Prompt Tokens",
+            "default": 0
+          },
+          "completion_tokens": {
+            "type": "integer",
+            "title": "Completion Tokens",
+            "default": 0
+          },
+          "total_tokens": {
+            "type": "integer",
+            "title": "Total Tokens",
+            "default": 0
+          }
+        },
+        "type": "object",
+        "title": "OpenAITokenUsage"
+      },
+      "PublicAgentDetailSchema": {
+        "properties": {
+          "agent_id": {
+            "type": "integer",
+            "title": "Agent Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "is_tool": {
+            "type": "boolean",
+            "title": "Is Tool"
+          },
+          "has_memory": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Has Memory"
+          },
+          "memory_max_messages": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Max Messages",
+            "default": 20
+          },
+          "memory_max_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Max Tokens",
+            "default": 4000
+          },
+          "memory_summarize_threshold": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Summarize Threshold",
+            "default": 20
+          },
+          "system_prompt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "System Prompt"
+          },
+          "prompt_template": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Template"
+          },
+          "create_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Create Date"
+          },
+          "request_count": {
+            "type": "integer",
+            "title": "Request Count"
+          },
+          "service_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Id"
+          },
+          "silo_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Silo Id"
+          },
+          "output_parser_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Parser Id"
+          },
+          "temperature": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature",
+            "default": 0.7
+          },
+          "vision_service_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vision Service Id"
+          },
+          "vision_system_prompt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vision System Prompt"
+          },
+          "text_system_prompt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text System Prompt"
+          }
+        },
+        "type": "object",
+        "required": [
+          "agent_id",
+          "name",
+          "type",
+          "is_tool",
+          "request_count"
+        ],
+        "title": "PublicAgentDetailSchema",
+        "description": "Detailed public agent schema for API responses"
+      },
+      "PublicAgentResponseSchema": {
+        "properties": {
+          "agent": {
+            "$ref": "#/components/schemas/PublicAgentDetailSchema"
+          }
+        },
+        "type": "object",
+        "required": [
+          "agent"
+        ],
+        "title": "PublicAgentResponseSchema",
+        "description": "Single agent response for public API"
+      },
+      "PublicAgentSchema": {
+        "properties": {
+          "agent_id": {
+            "type": "integer",
+            "title": "Agent Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "is_tool": {
+            "type": "boolean",
+            "title": "Is Tool"
+          },
+          "has_memory": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Has Memory"
+          },
+          "create_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Create Date"
+          },
+          "request_count": {
+            "type": "integer",
+            "title": "Request Count"
+          }
+        },
+        "type": "object",
+        "required": [
+          "agent_id",
+          "name",
+          "type",
+          "is_tool",
+          "request_count"
+        ],
+        "title": "PublicAgentSchema",
+        "description": "Public agent schema for API responses"
+      },
+      "PublicAgentsResponseSchema": {
+        "properties": {
+          "agents": {
+            "items": {
+              "$ref": "#/components/schemas/PublicAgentSchema"
+            },
+            "type": "array",
+            "title": "Agents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "agents"
+        ],
+        "title": "PublicAgentsResponseSchema",
+        "description": "Multiple agents response for public API"
+      },
+      "PublicConversationListResponseSchema": {
+        "properties": {
+          "conversations": {
+            "items": {
+              "$ref": "#/components/schemas/PublicConversationSchema"
+            },
+            "type": "array",
+            "title": "Conversations"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversations",
+          "total"
+        ],
+        "title": "PublicConversationListResponseSchema",
+        "description": "Paginated list of conversations"
+      },
+      "PublicConversationSchema": {
+        "properties": {
+          "conversation_id": {
+            "type": "integer",
+            "title": "Conversation Id"
+          },
+          "agent_id": {
+            "type": "integer",
+            "title": "Agent Id"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversation_id",
+          "agent_id"
+        ],
+        "title": "PublicConversationSchema",
+        "description": "Public conversation metadata"
+      },
+      "PublicConversationWithHistorySchema": {
+        "properties": {
+          "conversation_id": {
+            "type": "integer",
+            "title": "Conversation Id"
+          },
+          "agent_id": {
+            "type": "integer",
+            "title": "Agent Id"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          },
+          "messages": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Messages",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "conversation_id",
+          "agent_id"
+        ],
+        "title": "PublicConversationWithHistorySchema",
+        "description": "Conversation with message history"
+      },
+      "PublicSiloResponseSchema": {
+        "properties": {
+          "silo": {
+            "$ref": "#/components/schemas/PublicSiloSchema"
+          }
+        },
+        "type": "object",
+        "required": [
+          "silo"
+        ],
+        "title": "PublicSiloResponseSchema",
+        "description": "Single silo response wrapper"
+      },
+      "PublicSiloSchema": {
+        "properties": {
+          "silo_id": {
+            "type": "integer",
+            "title": "Silo Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "docs_count": {
+            "type": "integer",
+            "title": "Docs Count",
+            "default": 0
+          },
+          "vector_db_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vector Db Type"
+          },
+          "embedding_service_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Embedding Service Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "silo_id",
+          "name"
+        ],
+        "title": "PublicSiloSchema",
+        "description": "Public silo schema - excludes internal form data (output_parsers, embedding_services, etc.)"
+      },
+      "PublicSiloSearchResponseSchema": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/PublicSiloSearchResultSchema"
+            },
+            "type": "array",
+            "title": "Results"
+          },
+          "total_results": {
+            "type": "integer",
+            "title": "Total Results"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query",
+          "results",
+          "total_results"
+        ],
+        "title": "PublicSiloSearchResponseSchema",
+        "description": "Silo search response wrapper"
+      },
+      "PublicSiloSearchResultSchema": {
+        "properties": {
+          "page_content": {
+            "type": "string",
+            "title": "Page Content"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata"
+          },
+          "score": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score"
+          }
+        },
+        "type": "object",
+        "required": [
+          "page_content",
+          "metadata"
+        ],
+        "title": "PublicSiloSearchResultSchema",
+        "description": "Single search result from a silo"
+      },
+      "PublicSilosResponseSchema": {
+        "properties": {
+          "silos": {
+            "items": {
+              "$ref": "#/components/schemas/PublicSiloSchema"
+            },
+            "type": "array",
+            "title": "Silos"
+          }
+        },
+        "type": "object",
+        "required": [
+          "silos"
+        ],
+        "title": "PublicSilosResponseSchema",
+        "description": "Multiple silos response wrapper"
+      },
+      "RepositoriesResponseSchema": {
+        "properties": {
+          "repositories": {
+            "items": {
+              "$ref": "#/components/schemas/RepositorySchema"
+            },
+            "type": "array",
+            "title": "Repositories"
+          }
+        },
+        "type": "object",
+        "required": [
+          "repositories"
+        ],
+        "title": "RepositoriesResponseSchema",
+        "description": "Multiple repositories response"
+      },
+      "RepositoryResponseSchema": {
+        "properties": {
+          "repository": {
+            "$ref": "#/components/schemas/RepositorySchema"
+          }
+        },
+        "type": "object",
+        "required": [
+          "repository"
+        ],
+        "title": "RepositoryResponseSchema",
+        "description": "Single repository response"
+      },
+      "RepositorySchema": {
+        "properties": {
+          "repository_id": {
+            "type": "integer",
+            "title": "Repository Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "app_id": {
+            "type": "integer",
+            "title": "App Id"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "create_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Create Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "repository_id",
+          "name",
+          "app_id"
+        ],
+        "title": "RepositorySchema",
+        "description": "Repository schema"
+      },
+      "ResourceListResponseSchema": {
+        "properties": {
+          "resources": {
+            "items": {
+              "$ref": "#/components/schemas/ResourceSchema"
+            },
+            "type": "array",
+            "title": "Resources"
+          }
+        },
+        "type": "object",
+        "required": [
+          "resources"
+        ],
+        "title": "ResourceListResponseSchema",
+        "description": "List of resources"
+      },
+      "ResourceSchema": {
+        "properties": {
+          "resource_id": {
+            "type": "integer",
+            "title": "Resource Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "uri": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Uri"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "repository_id": {
+            "type": "integer",
+            "title": "Repository Id"
+          },
+          "folder_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Folder Id"
+          },
+          "create_date": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Create Date"
+          }
+        },
+        "type": "object",
+        "required": [
+          "resource_id",
+          "repository_id"
+        ],
+        "title": "ResourceSchema",
+        "description": "Resource schema"
+      },
+      "SingleDocumentIndexSchema": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "SingleDocumentIndexSchema",
+        "description": "Schema for indexing a single document"
+      },
+      "UpdateAgentRequestSchema": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "is_tool": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Tool"
+          },
+          "has_memory": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Has Memory"
+          },
+          "memory_max_messages": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Max Messages"
+          },
+          "memory_max_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Max Tokens"
+          },
+          "memory_summarize_threshold": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Summarize Threshold"
+          },
+          "system_prompt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "System Prompt"
+          },
+          "prompt_template": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prompt Template"
+          },
+          "service_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Id"
+          },
+          "silo_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Silo Id"
+          },
+          "output_parser_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Parser Id"
+          },
+          "temperature": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature"
+          },
+          "tool_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Ids"
+          },
+          "mcp_config_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mcp Config Ids"
+          },
+          "skill_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skill Ids"
+          }
+        },
+        "type": "object",
+        "title": "UpdateAgentRequestSchema",
+        "description": "Schema for updating an existing agent via public API"
+      },
+      "UpdateOCRAgentRequestSchema": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "is_tool": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Is Tool"
+          },
+          "has_memory": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Has Memory"
+          },
+          "memory_max_messages": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Max Messages"
+          },
+          "memory_max_tokens": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Max Tokens"
+          },
+          "memory_summarize_threshold": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Memory Summarize Threshold"
+          },
+          "service_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Service Id"
+          },
+          "vision_service_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vision Service Id"
+          },
+          "vision_system_prompt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vision System Prompt"
+          },
+          "text_system_prompt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text System Prompt"
+          },
+          "output_parser_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Parser Id"
+          },
+          "temperature": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Temperature"
+          },
+          "tool_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Ids"
+          },
+          "mcp_config_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mcp Config Ids"
+          },
+          "skill_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Skill Ids"
+          }
+        },
+        "type": "object",
+        "title": "UpdateOCRAgentRequestSchema",
+        "description": "Schema for updating an existing OCR agent via public API"
+      },
+      "UpdateRepositoryRequestSchema": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "title": "UpdateRepositoryRequestSchema",
+        "description": "Update repository request"
+      },
+      "UpdateSiloSchema": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          },
+          "output_parser_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output Parser Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "UpdateSiloSchema",
+        "description": "Schema for updating an existing silo (vector_db_type and embedding_service_id are immutable after creation)"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "YouTubeRequestSchema": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "folder_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Folder Id"
+          },
+          "forced_language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Forced Language"
+          },
+          "chunk_min_duration": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chunk Min Duration"
+          },
+          "chunk_max_duration": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chunk Max Duration"
+          },
+          "chunk_overlap": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chunk Overlap"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "title": "YouTubeRequestSchema",
+        "description": "YouTube video add request"
+      },
+      "routers__public__v1__schemas__MessageResponseSchema": {
+        "properties": {
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "MessageResponseSchema",
+        "description": "Standard message response"
+      },
+      "routers__public__v1__schemas__OCRResponseSchema": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "pages": {
+            "type": "integer",
+            "title": "Pages"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text",
+          "pages"
+        ],
+        "title": "OCRResponseSchema",
+        "description": "OCR processing response"
+      },
+      "routers__public__v1__schemas__SiloSearchSchema": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit"
+          },
+          "filter_metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filter Metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "title": "SiloSearchSchema",
+        "description": "Schema for searching in a silo"
+      },
+      "schemas__silo_schemas__SiloSearchSchema": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "limit": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Limit"
+          },
+          "filter_metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filter Metadata"
+          },
+          "search_type": {
+            "type": "string",
+            "title": "Search Type",
+            "default": "similarity"
+          },
+          "score_threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Score Threshold"
+          },
+          "fetch_k": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fetch K"
+          },
+          "lambda_mult": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lambda Mult"
+          },
+          "min_content_length": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Content Length"
+          },
+          "max_content_length": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Content Length"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "title": "SiloSearchSchema",
+        "description": "Schema for searching within a silo.\n\n`limit` — max results. Defaults to DEFAULT_SEARCH_LIMIT (100), capped at MAX_SEARCH_LIMIT (200).\n`search_type` — one of \"similarity\" (default), \"similarity_score_threshold\", \"mmr\".\n`score_threshold` — float 0-1, only meaningful when search_type=\"similarity_score_threshold\".\n`fetch_k` — candidate pool size for MMR, only meaningful when search_type=\"mmr\".\n`lambda_mult` — diversity factor 0-1 for MMR (1=max relevance, 0=max diversity). Default 0.5."
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      },
+      "APIKeyHeader": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-KEY"
+      }
+    }
+  }
+}

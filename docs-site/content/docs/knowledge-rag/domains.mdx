@@ -1,0 +1,169 @@
+---
+title: "Domains (Web Crawling)"
+description: "Crawl a website and vectorize its pages into a Silo so agents can search your web content alongside uploaded documents."
+---
+
+A **Domain** is a web crawling source linked to a Silo. You point it at a base URL, configure how deep and wide the crawler should go, and run a crawl job. Discovered pages are scraped, chunked, embedded, and stored in the linked Silo. Agents that use that Silo can then retrieve content from your website alongside any uploaded documents.
+
+Each Domain owns a dedicated Silo — one Domain per Silo. The Silo is created automatically when you create the Domain.
+
+<Figure src="/images/kr-domains.png" alt="Domains page in Mattin AI showing the list of web crawling sources" caption="The Domains page is where you create and manage web crawling sources. Each Domain entry links to a Silo that stores the crawled and vectorized page content." />
+
+## Prerequisites
+
+- An App to create the Domain in (see [Apps](/workspace/apps)).
+- At least one **Embedding Service** configured in the App (Settings → Embedding Services).
+
+## Create a Domain
+
+<Steps>
+  <Step>
+  ### Open Domains
+  Inside your App, navigate to **App → Domains**.
+  </Step>
+  <Step>
+  ### Click New Domain
+  Click **New Domain**. The Domain form opens.
+  </Step>
+  <Step>
+  ### Fill in the basic fields
+
+  | Field | Description |
+  |-------|-------------|
+  | **Name** | Display name for this Domain (e.g. `Docs Site`) |
+  | **Description** | Optional summary of the source |
+  | **Base URL** | The root URL the crawler starts from (e.g. `https://docs.example.com`) |
+  </Step>
+  <Step>
+  ### Configure content selectors (optional)
+  These fields narrow what text is extracted from each page. Leave them empty to extract the full page body.
+
+  | Field | Description |
+  |-------|-------------|
+  | **Content tag** | HTML tag to target (default: `body`) |
+  | **Content class** | CSS class on the element containing the main content |
+  | **Content ID** | `id` attribute of the element containing the main content |
+  </Step>
+  <Step>
+  ### Select a vector database and embedding service
+  Choose the **Vector DB** (PGVector or Qdrant) and the **Embedding Service**. These settings configure the Silo created alongside the Domain. They cannot be changed after the Domain is saved.
+  </Step>
+  <Step>
+  ### Save
+  Click **Create Domain**. The Domain and its linked Silo are created. You land on the Domain detail page.
+  </Step>
+</Steps>
+
+## Configure the Crawl Policy
+
+Before running the first crawl, set the policy that controls URL discovery and refresh behavior. Navigate to the Domain detail page and open the **Configuration** tab.
+
+| Field | Default | Description |
+|-------|---------|-------------|
+| **Seed URL** | — | Starting URL for link discovery (defaults to `base_url` if left empty) |
+| **Sitemap URL** | — | URL of an XML sitemap to bootstrap URL discovery |
+| **Manual URLs** | — | Additional specific URLs to always include, regardless of discovery |
+| **Max depth** | `2` | How many link-hops from the seed URL to follow |
+| **Include globs** | — | URL patterns to whitelist (e.g. `/docs/**`). Empty = include all |
+| **Exclude globs** | — | URL patterns to skip (e.g. `/blog/**`) |
+| **Rate limit** | `1.0 rps` | Maximum requests per second to the target site |
+| **Refresh interval** | `168 h` (1 week) | How often scheduled re-crawls run (0 = no scheduled crawls) |
+| **Respect robots.txt** | `true` | Whether the crawler obeys the site's `robots.txt` directives |
+| **Active** | `true` | When false, scheduled crawls are skipped |
+
+<Callout type="info">
+URL discovery uses three sources in combination: link-following from the seed URL (up to `max_depth`), the sitemap, and any manually added URLs. A URL must pass the `include_globs`/`exclude_globs` filters to be queued for indexing.
+</Callout>
+
+Click **Save policy** after making changes. Policy edits take effect on the next crawl job; they do not retroactively re-index already-crawled pages.
+
+## Run a Crawl
+
+<Steps>
+  <Step>
+  ### Open the Domain detail page
+  Navigate to **App → Domains** and click the Domain name.
+  </Step>
+  <Step>
+  ### Start a crawl
+  Click **Run Crawl Now**. A crawl job is enqueued with `triggered_by: MANUAL`. If a job is already queued or running, the button is disabled and you receive a conflict error.
+  </Step>
+  <Step>
+  ### Monitor progress
+  The **Configuration** tab shows a live progress panel for the active job. Switch to the **Job history** tab for a full list of past runs.
+  </Step>
+</Steps>
+
+Crawls also run automatically on the schedule defined in the crawl policy (`refresh_interval_hours`). Automatic jobs have `triggered_by: SCHEDULED`.
+
+## Crawl Job Statuses
+
+| Status | Meaning |
+|--------|---------|
+| `QUEUED` | Job is waiting for a worker |
+| `RUNNING` | Worker is actively crawling |
+| `COMPLETED` | Crawl finished without a fatal error |
+| `FAILED` | Crawl encountered an unrecoverable error |
+| `CANCELLED` | Job was cancelled manually before completion |
+
+A completed job shows four counters: **Discovered** (URLs found), **Indexed** (pages vectorized), **Skipped** (unchanged pages, skipped by filters, or excluded), **Failed** (pages that errored).
+
+## URL Statuses
+
+The **URLs** tab shows every discovered URL and its current state.
+
+| Status | Meaning |
+|--------|---------|
+| `PENDING` | Queued for the next crawl |
+| `CRAWLING` | Being fetched in the current run |
+| `INDEXED` | Page content is in the Silo |
+| `SKIPPED` | Content unchanged since last crawl (skipped to avoid redundant re-embedding) |
+| `FAILED` | Last crawl attempt errored |
+| `REMOVED` | Page was previously indexed but is no longer reachable or in scope |
+| `EXCLUDED` | Matched an exclude glob or was blocked by robots.txt |
+
+URLs are discovered from three sources (shown in the **Discovered via** column): `CRAWL` (link-following), `SITEMAP`, or `MANUAL` (added by hand).
+
+## Manage URLs Manually
+
+From the **URLs** tab you can:
+
+- **Add a URL** — click **Add URL** and enter an absolute URL. It is added as a `MANUAL` URL and queued for the next crawl.
+- **Force re-crawl a URL** — click the re-crawl icon on a URL row to mark it `PENDING` regardless of its current state or the content-hash check.
+- **Delete a URL** — removes the URL record and its indexed content from the Silo.
+
+## How Crawled Content is Vectorized
+
+For each indexed URL the backend:
+
+1. Fetches the page and extracts text from the configured HTML element (`content_tag` / `content_class` / `content_id`, or the full `<body>` if none are set).
+2. Splits the extracted text into overlapping chunks.
+3. Embeds each chunk using the Domain's Silo Embedding Service.
+4. Writes the vectors to the Silo's vector store collection (`silo_{silo_id}`).
+
+On subsequent crawls, content unchanged since the last run (detected via `content_hash` or HTTP `ETag`/`Last-Modified`) is skipped to avoid redundant re-embedding.
+
+<Callout type="warn">
+The vector database type and embedding service for a Domain's Silo are fixed at creation and cannot be changed. To change them you must delete the Domain and create a new one.
+</Callout>
+
+## Export and Import
+
+Domains can be exported to a JSON file and imported into another App. Navigate to the Domain detail page and use the **Export** button (available to Viewers and above). On import you can supply a new name and a replacement Embedding Service ID to adapt the Domain to the target App's configuration.
+
+## Related
+
+<Cards>
+  <Card title="Silos and RAG" href="/knowledge-rag/silos-and-rag">
+    The Silo that stores crawled content and serves agent queries
+  </Card>
+  <Card title="Repositories" href="/knowledge-rag/repositories">
+    Upload files into a Silo alongside crawled web content
+  </Card>
+  <Card title="Embedding Services" href="/workspace/embedding-services">
+    Configure the embedding model used to vectorize crawled pages
+  </Card>
+  <Card title="Agents" href="/building-agents/agents">
+    Link a Silo to an agent to search crawled content
+  </Card>
+</Cards>

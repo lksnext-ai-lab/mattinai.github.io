@@ -1,0 +1,241 @@
+---
+title: "SharePoint & OneDrive Sync"
+description: "Connect a Microsoft SharePoint or OneDrive drive to Mattin AI and keep a Silo in sync via incremental delta queries."
+---
+
+SharePoint Sync lets you index files from a Microsoft SharePoint site or OneDrive drive directly into a Silo. After the initial full scan, subsequent syncs are incremental — only files changed since the last run are re-processed, using the Microsoft Graph **delta API**.
+
+<Callout type="warn">
+SharePoint Sync is an **Enterprise Edition** module. It ships as the `mattin-sharepoint` plugin in the private `mattin-ai-plugins` repository. If the plugin is not installed the sidebar entry shows **SharePoint [EE]** and no sync functionality is available. Contact your account team for access.
+</Callout>
+
+## Prerequisites
+
+Before configuring a source in Mattin AI you need:
+
+1. **A Microsoft Azure App Registration** (service principal) with the `Files.Read.All` Microsoft Graph application permission and admin consent granted. No delegated permissions or user interaction is required — the connector uses the app-only (client credentials) OAuth 2.0 flow.
+2. **The `mattin-sharepoint` plugin installed** in the backend (see [Plugin Installation](#plugin-installation)).
+3. **An Embedding Service** configured in the App (Settings → Embedding Services).
+
+### Azure App Registration
+
+Create a dedicated App Registration in [Azure Portal](https://portal.azure.com) under **Entra ID → App registrations → New registration**.
+
+**Required API permission:**
+
+| API | Permission | Type |
+|-----|-----------|------|
+| Microsoft Graph | `Files.Read.All` | Application |
+
+After adding the permission, click **Grant admin consent** for your tenant.
+
+**Credentials you will need from the App Registration:**
+
+| Field | Where to find it |
+|-------|-----------------|
+| **Tenant ID** | Entra ID → Overview → Tenant ID |
+| **Client ID** | App Registration → Overview → Application (client) ID |
+| **Client Secret** | App Registration → Certificates & secrets → New client secret |
+
+## Add a SharePoint Source
+
+Navigate to **App → Data → SharePoint** and click **Add SharePoint Source**. A three-step wizard guides you through the setup.
+
+<Steps>
+  <Step>
+  ### Step 1 — Connect
+  Enter a **Name**, optional **Description**, and the three Azure credentials:
+
+  | Field | Description |
+  |-------|-------------|
+  | **Tenant ID** | Directory (tenant) ID from the App Registration |
+  | **Client ID** | Application (client) ID from the App Registration |
+  | **Client Secret** | A client secret value (not the secret ID) |
+
+  Click **Test Connection** to validate the credentials against Microsoft Graph before proceeding.
+  </Step>
+  <Step>
+  ### Step 2 — Choose Drive
+  Enter the full SharePoint site URL (e.g. `https://contoso.sharepoint.com/sites/MyTeam`) and click **Load**. The wizard resolves the site via `GET /sites/{hostname}:{path}` and lists its available drives. Select the drive to index.
+  </Step>
+  <Step>
+  ### Step 3 — Indexing
+  Configure the Silo and file filtering:
+
+  | Field | Description |
+  |-------|-------------|
+  | **Silo name** | Name for the new Silo created for this source |
+  | **Vector DB** | PGVector or Qdrant |
+  | **Embedding Service** | Embedding model used to vectorize file content |
+  | **File extension filters** | Optional whitelist of extensions without the leading dot (e.g. `pdf`, `docx`). Leave empty to index all supported types. |
+
+  Click **Create** to save the source and begin the initial sync automatically.
+  </Step>
+</Steps>
+
+<Callout type="info">
+A dedicated Silo is created and linked to the source during the wizard. The Silo name defaults to `{source name} Silo`. The vector DB type and embedding service cannot be changed after creation.
+</Callout>
+
+## Sync Behaviour
+
+Sync is driven by the Microsoft Graph delta API (`GET /drives/{id}/root/delta`).
+
+| Run | What happens |
+|-----|-------------|
+| **First sync** | Full scan of the drive — every file is downloaded and indexed |
+| **Subsequent syncs** | Only items changed since the last run are processed (delta token stored in `last_delta_token`) |
+| **Deleted file** | Vectors are removed from the Silo and the file record is deleted |
+| **Delta token expired** (`410 Gone`) | Connector automatically falls back to a full re-scan |
+
+### Sync Statuses
+
+| Status | Meaning |
+|--------|---------|
+| `IDLE` | No sync has run yet, or last sync completed cleanly |
+| `RUNNING` | Sync is currently in progress |
+| `SUCCESS` | Last sync completed with no file-level errors |
+| `PARTIAL` | Sync finished but one or more individual files failed |
+| `ERROR` | Sync itself failed (auth error, network error, etc.) |
+
+The source detail page polls while status is `RUNNING` and updates automatically.
+
+### File Statuses
+
+Each file tracked by a source has its own status:
+
+| Status | Meaning |
+|--------|---------|
+| `PENDING` | Awaiting processing in the current or next sync |
+| `INDEXED` | File content is in the Silo |
+| `ERROR` | Processing failed — check the error message on the file row |
+
+## Trigger a Manual Sync
+
+From the source list page, click the **Sync** icon on a source row. From the source detail page, click **Sync Now**. Both actions call `POST /internal/apps/{app_id}/sharepoint-sources/{id}/sync`.
+
+## File Extension Filters
+
+Filters are stored as a list of extensions without the leading dot (e.g. `["pdf", "docx"]`).
+
+- **Empty list** — all supported file types are indexed.
+- **Non-empty list** — only matching extensions are indexed. Files with other extensions are silently skipped.
+- **Adding a new extension** to the filter resets the delta token on save, so the next sync performs a full re-scan to pick up pre-existing files that match.
+
+Filters can be updated at any time from the source detail page under **Settings → File Filters**.
+
+## Supported File Types
+
+Only file types the text-extraction pipeline can process are indexed. Files with other extensions (`.xlsx`, `.png`, `.aspx`, etc.) are skipped without download.
+
+| Extension | Format |
+|-----------|--------|
+| `pdf` | PDF documents |
+| `docx` | Microsoft Word |
+| `txt` | Plain text |
+| `md` | Markdown |
+
+## Chunk Metadata
+
+Every vector chunk produced by a sync run carries source attribution metadata:
+
+```json
+{
+  "source": "sharepoint",
+  "source_id": 1,
+  "drive_item_id": "01ABC...",
+  "file_name": "report.pdf",
+  "file_path": "Marketing/Q1/report.pdf",
+  "web_url": "https://contoso.sharepoint.com/sites/MyTeam/Shared%20Documents/Marketing/Q1/report.pdf",
+  "site_url": "https://contoso.sharepoint.com/sites/MyTeam",
+  "drive_id": "b!abc..."
+}
+```
+
+This allows agents to cite the original SharePoint URL when referencing retrieved content.
+
+## Scheduling
+
+Set the **Refresh Interval** field (in minutes) on the source to schedule automatic syncs. Set it to `null` or `0` to disable scheduling and rely on manual triggers only. The `next_run_at` timestamp on the source record tracks the next scheduled execution.
+
+## Internal API Endpoints
+
+All endpoints require session or OIDC authentication and are scoped to an App.
+
+| Method | Path | Description |
+|--------|------|-------------|
+| `GET` | `/internal/apps/{app_id}/sharepoint-sources` | List all sources in the App |
+| `POST` | `/internal/apps/{app_id}/sharepoint-sources` | Create a new source (validates credentials) |
+| `GET` | `/internal/apps/{app_id}/sharepoint-sources/{id}` | Get source detail with file list |
+| `PATCH` | `/internal/apps/{app_id}/sharepoint-sources/{id}` | Update name, description, credentials, or filters |
+| `DELETE` | `/internal/apps/{app_id}/sharepoint-sources/{id}` | Delete source and its Silo |
+| `POST` | `/internal/apps/{app_id}/sharepoint-sources/{id}/sync` | Trigger a manual sync |
+| `GET` | `/internal/microsoft/resolve-site` | Resolve a SharePoint site by URL |
+| `GET` | `/internal/microsoft/drives` | List drives for a resolved site |
+| `POST` | `/internal/microsoft/test-connection` | Validate Azure credentials |
+
+## Plugin Installation
+
+The SharePoint connector ships as the `mattin-sharepoint` Python package in the private `mattin-ai-plugins` repository. The backend runs without it — the capabilities endpoint will omit `sharepoint` and the sidebar shows **SharePoint [EE]**.
+
+**Repository layout (side-by-side):**
+
+```
+LKS/IA-Core-Tools/
+├── ai-core-tools/         ← this repo
+└── mattin-ai-plugins/     ← private EE plugins (clone separately)
+```
+
+**First-time setup:**
+
+```bash
+# 1. Clone the plugins repo side-by-side with ai-core-tools
+git clone <mattin-ai-plugins-url> ../mattin-ai-plugins
+
+# 2. Install via Poetry
+poetry install --with sharepoint
+
+# 3. Switch to editable install so source changes take effect immediately
+poetry run pip install -e ../mattin-ai-plugins/
+
+# 4. Verify (path should point inside mattin-ai-plugins/, not site-packages/)
+poetry run python -c "import mattin_sharepoint; print(mattin_sharepoint.__file__)"
+```
+
+<Callout type="warn">
+Step 3 is required. Without it, `poetry install` copies a static snapshot to `.venv/site-packages/` and changes to the plugin source are invisible to the backend. Re-run step 3 after any `poetry install` that reinstalls the group.
+</Callout>
+
+**Verify the plugin is active:**
+
+```bash
+curl http://localhost:8000/internal/capabilities
+# → {"sharepoint": true, ...}
+```
+
+**Production / client install:** swap the dependency in `pyproject.toml` from the local path to the private Git URL before deploying:
+
+```toml
+[tool.poetry.group.sharepoint.dependencies]
+# local dev
+# mattin-sharepoint = {path = "../mattin-ai-plugins", develop = true}
+# production
+mattin-sharepoint = {git = "https://github.com/lks/mattin-ai-plugins.git"}
+```
+
+## Related
+
+<Cards>
+  <Card title="Silos and RAG" href="/knowledge-rag/silos-and-rag">
+    The Silo that stores synced SharePoint content
+  </Card>
+  <Card title="Repositories" href="/knowledge-rag/repositories">
+    Upload files directly instead of syncing from SharePoint
+  </Card>
+  <Card title="Embedding Services" href="/workspace/embedding-services">
+    Configure the embedding model used to vectorize synced files
+  </Card>
+  <Card title="API Reference" href="/api-reference/introduction">
+    Public and internal API authentication
+  </Card>
+</Cards>

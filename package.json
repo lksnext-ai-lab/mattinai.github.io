@@ -6,7 +6,10 @@
   "homepage": "https://lksnext-ai-lab.github.io/mattinai.github.io/",
   "scripts": {
     "build": "vite build",
-    "dev": "vite"
+    "dev": "vite",
+    "docs:install": "npm --prefix docs-site ci",
+    "docs:dev": "npm --prefix docs-site run dev",
+    "docs:build": "npm --prefix docs-site run build"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

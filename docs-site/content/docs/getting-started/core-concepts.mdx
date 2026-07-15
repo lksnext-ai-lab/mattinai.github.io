@@ -1,0 +1,105 @@
+---
+title: "Core Concepts"
+description: "The Mattin AI entity model: Apps, Agents, Silos, AI Services, and how they connect."
+---
+
+## The App: your tenant boundary
+
+Every resource in Mattin AI lives inside an **App** (also called a workspace). When you create an App you become its Owner. All agents, silos, services, API keys, and collaborators are scoped to that App — nothing crosses the boundary unless you explicitly share it.
+
+<Callout type="info">
+An App is the unit of isolation. Two Apps on the same platform share no agents, silos, or keys unless you duplicate them.
+</Callout>
+
+## Entity overview
+
+| Entity | What it is |
+|--------|------------|
+| **App** | The tenant workspace. Every other resource belongs to exactly one App. |
+| **Agent** | An AI assistant. Configured with a system prompt, an LLM (via an AIService), optional RAG (via a Silo), memory, skills, and output format. |
+| **AIService** | A named connection to an LLM provider (OpenAI, Anthropic, MistralAI, Azure, Google, Custom). Agents use it to generate responses. |
+| **EmbeddingService** | A named connection to an embedding model. Silos use it to vectorize content at ingest time. |
+| **Silo** | A vector knowledge base. Aggregates chunks from Repositories and Domains; agents query it for RAG context. |
+| **Repository** | A file collection linked to a Silo. Uploaded documents are chunked and vectorized into the Silo's collection. |
+| **Domain** | A web crawl source linked to a Silo. Crawled URLs are chunked and vectorized into the same Silo. |
+| **APIKey** | A 64-character key scoped to an App. Used to authenticate calls to the public REST API and MCP endpoints. Displayed only once on creation. |
+
+## How everything fits together
+
+```
+App (workspace)
+├── AIServices          ← LLM provider connections
+├── EmbeddingServices   ← Embedding model connections
+├── Agents              ← AI assistants
+│   ├── uses ──────────────────────► AIService  (required)
+│   └── links ─────────────────────► Silo       (optional, enables RAG)
+├── Silos               ← Vector knowledge bases
+│   ├── uses ──────────────────────► EmbeddingService
+│   ├── Repositories    ← Uploaded document collections
+│   └── Domains         ← Crawled web sources
+└── APIKeys             ← App-scoped authentication tokens
+```
+
+### Key relationships
+
+**Agent → AIService (required)**
+Each agent holds a `service_id` foreign key pointing to exactly one AIService. That AIService supplies the LLM provider, endpoint, and credentials used when the agent generates a response. The relationship is many-to-one: multiple agents in the same App can share one AIService.
+
+**Agent → Silo (optional)**
+An agent can hold an optional `silo_id`. When set, the agent's execution pipeline performs a similarity search against that Silo before invoking the LLM, injecting retrieved chunks as RAG context. Removing the link disables retrieval without deleting the Silo.
+
+**Silo → EmbeddingService**
+Each Silo holds an `embedding_service_id`. Every document chunk ingested — whether from a Repository upload or a Domain crawl — is vectorized using that EmbeddingService. Changing the service after ingest will leave existing vectors inconsistent; re-index after a service change.
+
+**Repository → Silo**
+A Repository is always created inside a Silo (`silo_id` is required and non-nullable on the Repository model). Uploaded files are chunked and their vectors written to the Silo's collection (`silo_{id}` in PGVector or Qdrant).
+
+**Domain → Silo**
+Domains work the same way: each Domain has a required `silo_id`. Crawled page content is vectorized and stored in the same collection as the Silo's Repository content, making everything queryable together.
+
+**APIKey → App**
+API keys carry an `app_id` and a `user_id` (the creator). They authenticate calls to `/public/v1/*` and `/mcp/*` endpoints. All resources returned by those endpoints are scoped to the key's App.
+
+<Callout type="info">
+Each Silo independently chooses its vector database backend: PGVector (co-located with PostgreSQL) or Qdrant (standalone). This is set per Silo via the `vector_db_type` field and defaults to `PGVECTOR` (see `backend/models/silo.py`).
+</Callout>
+
+## Role hierarchy
+
+Access to an App's resources is governed by a four-level role hierarchy (plus the platform-level **OMNIADMIN**). Higher roles inherit all permissions from lower ones.
+
+| Level | Role | Inherits from | Key permissions |
+|-------|------|---------------|-----------------|
+| 5 | **OWNER** | ADMINISTRATOR | Edit app settings, invite/remove collaborators, transfer ownership, delete app — full control |
+| 4 | **ADMINISTRATOR** | EDITOR | Manage AIServices and EmbeddingServices, configure MCP, generate API keys |
+| 3 | **EDITOR** | VIEWER | Create/update/delete agents, silos, repositories, domains |
+| 2 | **VIEWER** | — | List and view all resources, execute agents (chat) |
+
+<Callout type="info">
+**OMNIADMIN** is a platform-level role configured via the `AICT_OMNIADMINS` environment variable (a comma-separated list of email addresses). It is not an App role — it grants system-wide access to every App regardless of membership. The full ordered sequence from lowest to highest is: `VIEWER → EDITOR → ADMINISTRATOR → OWNER → OMNIADMIN`.
+</Callout>
+
+Every resource-mutating endpoint enforces a minimum role via the `require_min_role` dependency on the backend. For example, creating an agent requires `EDITOR`; generating an API key requires `ADMINISTRATOR`; accessing admin endpoints requires `OMNIADMIN`.
+
+## Guides for each concept
+
+<Cards>
+  <Card title="Apps" href="/workspace/apps">
+    Create and configure workspaces. Manage collaborators and roles.
+  </Card>
+  <Card title="Agents" href="/building-agents/agents">
+    Configure system prompts, LLM selection, memory, skills, and output parsers.
+  </Card>
+  <Card title="Silos and RAG" href="/knowledge-rag/silos-and-rag">
+    Build vector knowledge bases. Attach them to agents for retrieval-augmented generation.
+  </Card>
+  <Card title="Repositories" href="/knowledge-rag/repositories">
+    Upload and manage document collections inside a Silo.
+  </Card>
+  <Card title="API Keys" href="/workspace/api-keys">
+    Generate App-scoped keys for the public REST API and MCP endpoints.
+  </Card>
+  <Card title="Playground" href="/building-agents/playground">
+    Chat with agents, test configurations, and inspect conversation history.
+  </Card>
+</Cards>
